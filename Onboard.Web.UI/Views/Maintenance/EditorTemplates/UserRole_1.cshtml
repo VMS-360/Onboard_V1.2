@@ -1,0 +1,7 @@
+@model Onboard.Web.UI.Models.MaintenanceViewModels.OnboardRoleViewModel
+
+@(Html.Kendo().DropDownListFor(m => m)
+        .DataValueField("RoleId")
+        .DataTextField("RoleName")
+        .BindTo((System.Collections.IEnumerable)ViewData["roles"])
+)

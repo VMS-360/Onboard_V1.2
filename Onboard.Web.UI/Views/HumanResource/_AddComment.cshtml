@@ -1,0 +1,12 @@
+@model Onboard.Web.UI.Models.HRViewModels.CommentViewModel
+@Html.ValidationSummary("The following errors occurred:")
+
+@Html.HiddenFor(m => m.CommentEnrollmentId)
+<div class="row">
+    <div class="col-lg-6">
+        <div class="form-group">
+            <label>Comment *</label>
+            <textarea asp-for="Comment" class="form-control" rows="4"></textarea>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,114 @@
+﻿@using System.Collections.Generic
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Authentication
+@model LoginViewModel
+@inject SignInManager<ApplicationUser> SignInManager
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboard | Login</title>
+
+    <environment names="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
+        <link rel="stylesheet" href="~/css/onboard.css" />
+        <link rel="stylesheet" href="~/css/animate.css" />
+        <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    </environment>
+    <environment names="Staging,Production">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="~/css/onboard.css" />
+        <link rel="stylesheet" href="~/css/animate.css" />
+        <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    </environment>
+</head>
+<body class="gray-bg">
+    <div class="login-container theme-showcase" role="main">
+        <div class="login-jumbotron">
+            <div class="middle-box loginscreen">
+                <div class="border-bottom white-bg dashboard-header login-div">
+                    <h2><img src="~/images/onboard_logo.png" class="img-responsive img-main-logo login-input " /></h2>
+                    <h3>Sign in</h3>
+                    <p>to continue</p>
+
+                    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { id = "formLogin", @class = "m-t" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="form-group login-input-div">
+                            <div id="div-uid-caption" class="userid-caption">Enter your username</div>
+                            <input asp-for="UserName" class="form-control login-input" placeholder="Enter your username" autocomplete="off" />
+                            <div id="div-uid-grey" class="login-grey"></div>
+                            <div id="div-uid-blue" class="login-blue"></div>
+                            <span asp-validation-for="UserName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group login-input-div">
+                            <div id="div-pwd-caption" class="password-caption">Enter your password</div>
+                            <input asp-for="Password" class="form-control login-input" placeholder="Enter your password" />
+                            <div id="div-pwd-grey" class="login-grey"></div>
+                            <div id="div-pwd-blue" class="login-blue"></div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary block full-width m-b">Login</button>
+                        <div class="text-center">
+                            <a href="#"><small>Forgot password?</small></a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <environment names="Development">
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    </environment>
+    <script>
+        $(document).ready(function () {
+            $('#div-pwd-caption').hide();
+            $('#div-pwd-blue').hide();
+            $('#div-pwd-grey').show();
+            $('#div-uid-caption').hide();
+            $('#div-uid-blue').hide();
+            $('#div-uid-grey').show();
+        });
+        $(document).on('focus', '#Password', function () {
+            $('#div-pwd-caption').show();
+            $('#div-pwd-blue').show();
+            $('#div-pwd-caption').addClass('animated fadeInUp');
+            $('#div-pwd-blue').addClass('animated fadeIn');
+            $('#div-pwd-grey').hide();
+            $('#Password').attr('placeholder', '');
+        }).on('blur', '#Password', function () {
+            $('#div-pwd-caption').hide();
+            $('#div-pwd-blue').hide();
+            $('#div-pwd-grey').show();
+            $('#Password').attr('placeholder', 'Enter your password');
+            }).on('focus', '#UserName', function () {
+            $('#div-uid-caption').show();
+            $('#div-uid-blue').show();
+            $('#div-uid-caption').addClass('animated fadeInUp');
+            $('#div-uid-blue').addClass('animated fadeIn');
+            $('#div-uid-grey').hide();
+            $('#UserName').attr('placeholder', '');
+            }).on('blur', '#UserName', function () {
+            $('#div-uid-caption').hide();
+            $('#div-uid-blue').hide();
+            $('#div-uid-grey').show();
+            $('#UserName').attr('placeholder', 'Enter your username');
+            });
+    </script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+</body>
+</html>
+
+

@@ -1,0 +1,27 @@
+@model IEnumerable<Onboard.Web.UI.Models.DatabaseViewModels.VendorsViewModel>
+
+    <table class="table table-hover" id="Vendor-Lists">
+        <tbody>
+            @foreach (var vendor in Model)
+            {
+                <tr pk-id="@vendor.VendorId">
+                    <td class="project-title">
+                        @if (vendor.Status == "A")
+                        {
+                            <span class="label label-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="label label-danger">Inactive</span>
+                        }
+                    </td>
+                    <td class="project-title">
+                        @vendor.CompanyName
+                    </td>
+                    <td class="project-actions">
+                        <a href="#" class="btn btn-white btn-sm" action="view-vendor"><i class="fa fa-folder"></i> View </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>

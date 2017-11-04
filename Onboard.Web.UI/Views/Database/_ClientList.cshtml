@@ -1,0 +1,27 @@
+@model IEnumerable<Onboard.Web.UI.Models.DatabaseViewModels.ClientsViewModel>
+
+<table class="table table-hover" id="Client-Lists">
+    <tbody>
+        @foreach (var client in Model)
+        {
+            <tr pk-id="@client.ClientId">
+                <td class="project-title">
+                    @if (client.Status == "A")
+                    {
+                        <span class="label label-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="label label-danger">Inactive</span>
+                    }
+                </td>
+                <td class="project-title">
+                    @client.CompanyName
+                </td>
+                <td class="project-actions">
+                    <a href="#" class="btn btn-white btn-sm" action="view-client"><i class="fa fa-folder"></i> View </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

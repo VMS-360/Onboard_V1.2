@@ -1,0 +1,210 @@
+@model IEnumerable<Onboard.Web.UI.Models.DatabaseViewModels.ClientsViewModel>
+    @{
+        ViewData["Title"] = "Onbaord - Clients";
+    }
+    <style>
+        .row-select {
+            background-color: #5a8dc2;
+        }
+    </style>
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-sm-8">
+            <h2>Clients</h2>
+            <ol class="breadcrumb">
+                <li>
+                    Database
+                </li>
+                <li class="active">
+                    <strong>Clients</strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-sm-4">
+            <dl class="breadcrumb-padding pull-right">
+                <a href="#" class="btn btn-white btn-sm" action="add-client"><i class="fa fa-plus"></i> Add Client </a>
+            </dl>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="wrapper wrapper-content animated fadeInUp">
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <div class="m-b-md col-lg-9">
+                            <h2>Clients</h2>
+                        </div>
+                        <div class="col-lg-3">
+                            <dl class="dl-horizontal pull-right">
+                                <span id="client-count">@Model.Count()</span>
+                                Clients
+                            </dl>
+                        </div>
+                        <div class="row m-b-sm m-t-sm">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="text" placeholder="Search" class="input-sm form-control"> <span class="input-group-btn">
+                                        <button type="button" class="btn btn-sm btn-primary" action="search-client"> Go!</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="clients-list">
+                            @Html.Partial("_ClientList", Model)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div id="client-details">
+                @Html.Partial("_ClientDetails", new Onboard.Web.UI.Models.DatabaseViewModels.ClientsViewModel())
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal fade" id="add-client-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <div class="row">
+                        <div class="col-xs-pull-4">
+                            <i class="fa fa-user-plus fa-5x primary-color"></i>
+                        </div>
+                    </div>
+                    <h4 class="modal-title">Add client</h4>
+                    <small class="font-bold">Complete all required fields to add a new client.</small>
+                </div>
+                <div class="modal-body">
+                    <form id="form-add-client" action="#" class="">
+                        <div id="div-add-client">
+                            @Html.Partial("_AddClient", new Onboard.Web.UI.Models.DatabaseViewModels.ClientsViewModel())
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="add-client-save">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @section scripts{
+        <script>
+            $(document).ready(function () {
+
+            }).on('click', 'button[action="search-client"]', function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("ClientSearch", "Database")',
+                    data: { 'searchString': $('input[placeholder="Search"]').val() },
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#clients-list').html(result.Html);
+                            }
+                        }
+                    }
+                });
+                }).on('click', 'a[action="view-client"]', function () {
+                    return false;
+                @*var clientId = $(this).closest('tr').attr("pk-id");
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("ClientDetails", "Database")',
+                    data: { 'clientId': clientId },
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#client-details').html(result.Html);
+                            }
+                        }
+                    }
+                });*@
+            }).on('click', 'a[action="add-client"]', function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("PrepareAddClient", "Database")',
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#div-add-client').html(result.Html);
+                                $('#add-client-modal').modal({ backdrop: 'static', keyboard: false });
+                            }
+                        }
+                    }
+                });
+            }).on('click', '#add-client-save', function () {
+                $("#form-add-client").find(".validation-summary-errors")
+                    .addClass("validation-summary-valid")
+                    .removeClass("validation-summary-errors");
+
+                var validationInfo = $("#form-add-client").data("unobtrusiveValidation");
+                if (!validationInfo || !validationInfo.validate || validationInfo.validate()) {
+
+                    var url = '@Url.Action("AddClient", "Database")';
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $("#form-add-client").serialize(),
+                        error: function () {
+                            alert("An error occurred processing the request.");
+                        },
+                        success: function (result, textStatus, xhr) {
+                            if (xhr.status === 302) {
+                                alert("Your session has expired.  Please log in.");
+                            }
+                            else {
+                                if (result.Success) {
+                                    $('#clients-list').html(result.Html);
+                                    $('#client-count').html(result.Count);
+                                    $('#add-client-modal').modal('toggle');
+                                }
+                                else {
+                                    $('#div-add-client').html(result.Html);
+                                }
+                            }
+                        }
+                    });
+                }
+                }).on('click', '#Client-Lists td', function () {
+                    $("#Client-Lists td").removeClass("row-select");
+                    $(this).closest('tr').find('td').addClass("row-select");
+
+                    var clientId = $(this).closest('tr').attr("pk-id");
+                    $.ajax({
+                        type: "GET",
+                        url: '@Url.Action("ClientDetails", "Database")',
+                        data: { 'clientId': clientId },
+                        success: function (result, textStatus, xhr) {
+                            if (xhr.status === 302) {
+                                alert("Your session has expired.  Please log in.");
+                            }
+                            else {
+                                if (result.Success) {
+                                    $('#client-details').html(result.Html);
+                                }
+                            }
+                        }
+                    });
+                });
+
+            $(document).ready(function () {
+                $('#Client-Lists td').css('cursor', 'pointer');
+            });
+        </script>
+    }
+
+
+

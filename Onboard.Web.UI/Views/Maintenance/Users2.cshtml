@@ -1,0 +1,228 @@
+@model Onboard.Web.UI.Models.MaintenanceViewModels.UserListViewModel
+@{
+    ViewData["Title"] = "Onbaord - Users";
+}
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5><span class="label label-primary">@Model.UserCount </span> &nbsp;&nbsp; Users List</h5>
+                    <div class="ibox-tools">
+                        <div class="pull-right">
+                            <button id="button-add-user" class="btn btn-sm btn-primary m-t-n-xs" type="button" data-toggle="modal" data-target="#add-user"><strong>Add New User</strong></button>
+                            <button id="btn-delete-users" class="btn btn-sm btn-primary m-t-n-xs" type="button" data-toggle="modal" data-target="#delete-user"><strong>Delete Users</strong></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    @Html.Partial("_UserList2")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal inmodal fade" id="add-user" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <div class="row">
+                    <div class="col-xs-pull-4">
+                        <i class="fa fa-user-plus fa-5x primary-color"></i>
+                    </div>
+                </div>
+                <h4 class="modal-title">Add User</h4>
+                <small class="font-bold">Complete all required fields to add a new user.</small>
+            </div>
+            <div class="modal-body">
+                <form id="form-add-user" action="#" class="">
+                    <div id="div-add-user">
+                        @Html.Partial("_AddUser", new Onboard.Web.UI.Models.MaintenanceViewModels.OnboardUserViewModel())
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="add-user-save">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Partial("_DeleteUser")
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    <script type="text/javascript">
+        function error_handler(e) {
+            if (e.errors) {
+                var message = "Errors:\n";
+                $.each(e.errors, function (key, value) {
+                    if ('errors' in value) {
+                        $.each(value.errors, function () {
+                            message += this + "\n";
+                        });
+                    }
+                });
+                alert(message);
+            }
+        }
+
+        $(document).ready(function () {
+            $('#UserGrid1 th a span').toggleClass('k-i-filter')
+            $('#UserGrid1 th a span').toggleClass('k-i-arrow-60-down')
+        });
+
+        $(document).on('click', '#add-user-save', function () {
+            $("#form-add-user").find(".validation-summary-errors")
+                .addClass("validation-summary-valid")
+                .removeClass("validation-summary-errors");
+
+            var validationInfo = $("#form-add-user").data("unobtrusiveValidation");
+            if (!validationInfo || !validationInfo.validate || validationInfo.validate()) {
+
+                var url = '@Url.Action("AddUser", "Maintenance")';
+                if ($('#UserId').val() != 0)
+                {
+                    url = '@Url.Action("UpdateSelectedUser", "Maintenance")';
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: serializeRowData($("#form-add-user").serialize()),
+                    error: function () {
+                        alert("An error occurred processing the request.");
+                    },
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#UserGrid1').data('kendoGrid').dataSource.read();
+                                $('#add-user').modal('toggle');
+                            }
+                            else {
+                                $('#div-add-user').html(result.Html);
+                            }
+                        }
+                    }
+                });
+            }
+        }).on('click', '#btn-add-user', function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("PrepareAddUser", "Maintenance")',
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
+                    }
+                    else {
+                        if (result.Success) {
+                            $('#div-add-user').html(result.Html);
+                        }
+                    }
+                }
+            });
+        }).on('click', '#btn-delete-users', function () {
+            var $items = [];
+            var $deleteusers = [];
+            $('#UserGrid1 tbody tr').each(function () {
+                if ($(this).find('td:first input[type="checkbox"]').is(':checked')) {
+                    $items.push($(this).find('td:nth-child(3)').html());
+                    $deleteusers.push($(this).find('td:nth-child(4)').html());
+                }
+            });
+
+            var str = "";
+            for (var i = 0; i < $deleteusers.length; i++) {
+                str = str + $deleteusers[i] + " ";
+            }
+
+            $('#Model-Delete-User-Names').html(str);
+            str = "";
+            for (var i = 0; i < $items.length; i++) {
+                str = str + $deleteusers[i] + "-";
+            }
+
+            $('#hdn-delete-users').val(str);
+            if (str.length > 0) {
+                $('#Modal-Delete-Accept').modal('toggle');
+            }
+        }).on('click', 'button[action="btn-delete-confirm"]', function () {
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("DeleteUsers", "Maintenance")',
+                data: { 'users': $('#hdn-delete-users').val() },
+                error: function () {
+                    alert("An error occurred processing the request.");
+                },
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
+                    }
+                    else {
+                        if (result.Success) {
+                            $('#user-count').html(result.Html);
+                            $('#UserGrid1').data('kendoGrid').dataSource.read();
+                            $('#Modal-Delete-Accept').modal('toggle');
+                        }
+                    }
+                }
+            });
+            }).on('click', 'a[action="edit-user"]', function () {
+                var userId = $(this).attr("user-id");
+                $.ajax({
+                type: "GET",
+                url: '@Url.Action("PrepareAddUser", "Maintenance")',
+                data: { 'userId': userId },
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
+                    }
+                    else {
+                        if (result.Success) {
+                            $('#div-add-user').html(result.Html);
+                            $('#add-user').modal('toggle');
+                        }
+                    }
+                }
+                });
+
+                return false;
+        });
+
+        function serializeRowData(element) {
+            var sdata = element;
+            var $data = element.split("&");
+
+            $.each($data, function (e) {
+                if ($data[e].split("=")[0] === "Internal") {
+                    var internal = $data[e].split("=")[1];
+                    sdata += "&IsInternal=";
+                    if (internal == "I") {
+                        sdata += "true";
+                    }
+                    else {
+                        sdata += "false";
+                    }
+                }
+            });
+
+            return sdata;
+        }
+
+        function rolesFilter(element) {
+            element.kendoDropDownList({
+                dataSource: {
+                    transport: {
+                        read: "Maintenance/GetRoles"
+                    }
+                }
+            });
+        }
+    </script>
+}
+

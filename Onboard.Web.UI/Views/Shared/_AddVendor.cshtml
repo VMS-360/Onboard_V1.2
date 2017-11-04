@@ -1,0 +1,35 @@
+@model Onboard.Web.UI.Models.DatabaseViewModels.VendorsViewModel
+@Html.ValidationSummary("The following errors occurred:")
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="form-group">
+            <label>Vendor Name *</label>
+            <input asp-for="CompanyName" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Tax ID</label>
+            <input asp-for="TaxId" class="form-control" />
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="form-group">
+            <label>Address *</label>
+            <input asp-for="AddressLine1" class="form-control" />
+        </div>
+        <div class="form-group form-group-height">
+            <div class="col-sm-4 no-padding">
+                <label>City *</label>
+                <input asp-for="City" class="form-control" />
+            </div>
+            <div class="col-sm-4">
+                <label>State *</label>
+                <input asp-for="State" class="form-control" />
+            </div>
+            <div class="col-sm-4 no-padding">
+                <label>Zip *</label>
+                <input asp-for="Zip" class="form-control" />
+            </div>
+        </div>
+    </div>
+</div>

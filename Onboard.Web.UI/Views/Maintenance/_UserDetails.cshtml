@@ -1,0 +1,57 @@
+@model Onboard.Web.UI.Models.MaintenanceViewModels.OnboardUserViewModel
+
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <div class="row">
+                    <div class="col-xs-pull-4">
+                        <i class="fa fa-info-circle fa-5x primary-color"></i>
+                    </div>
+                </div>
+                <h4 class="modal-title">@Model.FirstName  @Model.LastName </h4>
+                <small class="font-bold">Information for the above user.</small>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <dl class="dl-horizontal pull-right">
+                            <dt>Status:</dt>
+                            <dd><span class="label label-primary">Active</span></dd>
+                        </dl>
+                    </div>
+                    <div class="col-lg-5">
+                        <dl class="dl-horizontal">
+                            <dt>User Name:</dt>
+                            <dd>@Model.UserName</dd>
+                            <dt>&nbsp;</dt>
+                            <dd>&nbsp;</dd>
+                            <dt>Internal:</dt>
+                            <dd > @(Model.IsInternal ? "Internal" : "External")</dd>
+                            <dt>First Name:</dt>
+                            <dd >@Model.FirstName</dd>
+                            <dt>Last Name:</dt>
+                            <dd >@Model.LastName</dd>
+                        </dl>
+                    </div>
+                    <div class="col-lg-7" id="cluster_info">
+                        <dl class="dl-horizontal">
+                            <dt>&nbsp;</dt>
+                            <dd>&nbsp;</dd>
+                            <dt>&nbsp;</dt>
+                            <dd>&nbsp;</dd>
+                            <dt>Email:</dt>
+                            <dd><a href='mailto:@Model.Email'> @Model.Email</a></dd>
+                            <dt>Role:</dt>
+                            <dd>@Model.RoleName </dd>
+                            <dt>Address:</dt>
+                            <dd ></dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>

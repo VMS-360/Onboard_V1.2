@@ -1,0 +1,53 @@
+@model IEnumerable<Onboard.Web.UI.Models.HRViewModels.CandidateViewModel>
+<div class="row m-b-sm m-t-sm">
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text" placeholder="Search" class="input-sm form-control"> <span class="input-group-btn">
+                <button type="button" class="btn btn-sm btn-primary"> Go!</button>
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="project-list">
+    <table class="table table-hover">
+        <tbody>
+            @foreach (var candidate in Model)
+            {
+                <tr pk-id="@candidate.EnrollmentId" can-id="@candidate.CandidateId">
+                    <td class="project-title">
+                        @candidate.CandidateName
+                        <br />
+                        <small>@candidate.DateString</small>
+                    </td>
+                    <td class="project-title">
+                        @candidate.VendorString
+                    </td>
+                    <td class="project-title">
+                        <span class="@candidate.TimeColor">
+                            @candidate.TimeEllapsed
+                        </span>
+                    </td>
+                    <td class="project-title">
+                        @candidate.UpdateString
+                        <br />
+                        <small>By:</small> 
+                        <span class="text-navy">
+                            @candidate.ModifiedBy
+                        </span>
+                    </td>
+                    <td class="project-completion">
+                        <small>Completion with: @candidate.PercentComplete%</small>
+                        <div class="progress progress-mini">
+                            <div style="width: @candidate.PercentComplete%;" class="progress-bar"></div>
+                        </div>
+                    </td>
+                    <td class="project-actions">
+                        <a href="#" class="btn btn-white btn-sm" action="view-candidate"><i class="fa fa-folder"></i> View </a>
+                        <a href="@Url.Action("Onboarding", "HumanResource", new { candidateId = candidate.CandidateId })" class="btn btn-primary btn-sm"><i class="fa fa-bars"></i> Process </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

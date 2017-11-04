@@ -1,0 +1,8 @@
+@model  IEnumerable<Onboard.Web.UI.Models.HRViewModels.ChecklistViewModel>
+    <ul class="todo-list m-t small-list">
+        @foreach (var listItem in Model)
+        {
+            @Html.Partial("_TaskListItemSub", listItem)
+        }
+    </ul>
+

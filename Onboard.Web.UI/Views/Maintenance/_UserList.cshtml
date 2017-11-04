@@ -1,0 +1,57 @@
+<style>
+    #UserGrid1 {
+        height: 873px !important;
+    }
+
+        #UserGrid1 .k-grid,
+        .k-grid-header-wrap,
+        .k-grid-header th,
+        .k-grid-content > table > tbody > tr > td {
+            border: 0;
+        }
+</style>
+
+@(Html.Kendo().Grid<Onboard.Web.UI.Models.MaintenanceViewModels.OnboardUserViewModel>()
+    .Name("UserGrid1")
+    .Columns(columns =>
+    {
+        columns.Bound(p => p.IsSelected).Width(15).Title(" ").Filterable(false).ClientTemplate("<input type='checkbox' #= IsSelected ? checked='checked': '' # class='chkbx' />").HtmlAttributes(new { style = "text-align: center" });
+        columns.Bound(p => p.UserId).Width(15).Title(" ").Filterable(false).ClientTemplate("<a href='' action='edit-user' user-id='#=UserId#'><i class='fa fa-binoculars'></i></a>").HtmlAttributes(new { style = "text-align: center" });
+        columns.Bound(p => p.UserId).Hidden(true);
+        columns.Bound(p => p.UserName).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+        columns.Bound(p => p.FirstName).Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+        columns.Bound(p => p.LastName).Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+        columns.Bound(p => p.Email).Width(190).Filterable(ftb => ftb.Multi(true).Search(true)).ClientTemplate("<a href='mailto:#=Email#'>#=Email#</a>");
+        columns.ForeignKey(p => p.RoleId, (System.Collections.IEnumerable)ViewData["roles"], "RoleId", "RoleName")
+               .Title("Role").Width(120)
+               .Filterable(ftb => ftb.Multi(true));
+        columns.Bound(p => p.RoleName).Hidden(true).ClientGroupHeaderTemplate("Role: #= value # (Count: #= count#)");
+        columns.Bound(p => p.IsInternal).Width(50).Title("Internal").ClientTemplate("# if (IsInternal) { # <i class='fa fa-check' aria-hidden='true'></i> # } #").HtmlAttributes(new { style = "text-align: left" });
+    })
+    .Editable(editable => editable.Mode(GridEditMode.InCell))
+    .Sortable()
+    .Scrollable()
+    .Resizable(resize => resize.Columns(true))
+    .Reorderable(reorderable => reorderable.Columns(true))
+    .Filterable()
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .Batch(true)
+        .ServerOperation(false)
+        .Aggregates(aggregates =>
+        {
+            aggregates.Add(p => p.RoleName).Count();
+        })
+        .Group(g => g.Add(p => p.RoleName))
+        .Events(events => events.Error("error_handler"))
+        .Model(model =>
+        {
+            model.Id(p => p.UserId);
+            model.Field(p => p.UserId).Editable(false);
+            model.Field(p => p.IsSelected).Editable(false);
+            model.Field(p => p.UserName).Editable(false);
+        })
+        .Read(read => read.Action("GetUsers", "Maintenance"))
+        .Update(update => update.Action("UpdateUser", "Maintenance"))
+    )
+)

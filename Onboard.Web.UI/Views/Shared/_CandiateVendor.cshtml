@@ -1,0 +1,8 @@
+@model IEnumerable<SelectListItem>
+<div class="form-group">
+    <label>Vendor *</label> 
+    <button class="btn btn-success btn-circle" type="button" data-action="add-vendor">
+        <i class="fa fa-plus"></i>
+    </button>
+    @Html.DropDownList("Vendor", Model, new { @class = "form-control" })
+</div>

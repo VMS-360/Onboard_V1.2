@@ -1,0 +1,74 @@
+<style>
+    #UserGrid1 {
+        height: 713px !important;
+    }
+
+        #UserGrid1 .k-grid,
+        .k-grid-header-wrap,
+        .k-grid-header th,
+        .k-grid-content > table > tbody > tr > td {
+            border: 0;
+        }
+</style>
+
+@(Html.Kendo().Grid<Onboard.Web.UI.Models.MaintenanceViewModels.OnboardUserViewModel>()
+    .Name("UserGrid1")
+    .Columns(columns =>
+    {
+        columns.Bound(p => p.IsSelected).Width(15).Title(" ").Filterable(false).ClientTemplate("<input type='checkbox' #= IsSelected ? checked='checked': '' # class='chkbx' />").HtmlAttributes(new { style = "text-align: center" });
+        columns.Bound(p => p.UserId).Width(15).Title(" ").Filterable(false).ClientTemplate("<a href='' action='edit-user' user-id='#=UserId#'><i class='fa fa-binoculars'></i></a>").HtmlAttributes(new { style = "text-align: center" });
+        columns.Bound(p => p.UserId).Hidden(true);
+        columns.Bound(p => p.UserName).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+        columns.Bound(p => p.FirstName).Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+        columns.Bound(p => p.LastName).Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+        columns.Bound(p => p.Email).Width(120).Filterable(ftb => ftb.Multi(true).Search(true)).ClientTemplate("<a href='mailto:#=Email#'>#=Email#</a>");
+        columns.Bound(p => p.RoleName).Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+        columns.Bound(p => p.IsInternal).Width(100).Title("Internal").Filterable(false).ClientTemplate("<input type='checkbox' disabled #= IsInternal ? checked='checked': '' # class='chkbx' />").HtmlAttributes(new { style = "text-align: left" });
+    })
+    .Sortable()
+    .Pageable()
+    .Scrollable()
+    .Resizable(resize => resize.Columns(true))
+    .Reorderable(reorderable => reorderable.Columns(true))
+    .Filterable()
+    .HtmlAttributes(new { style = "height:750px;" })
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .Events(events => events.Error("error_handler"))
+        .Model(model =>
+        {
+            model.Id(p => p.UserId);
+            model.Field(p => p.UserName).Editable(false);
+            model.Field(p => p.Role)
+            .Editable(true)
+            .DefaultValue(
+                ViewData["defaultRole"] as Onboard.Web.UI.Models.MaintenanceViewModels.OnboardRoleViewModel);
+        })
+        .Read(read => read.Action("GetUsers", "Maintenance"))
+        .Update(update => update.Action("UpdateUser", "Maintenance"))
+        .Destroy(update => update.Action("RemoveUser", "Maintenance"))
+    )
+)
+
+<script type="text/javascript">
+    function userRoles(element) {
+        var rolesRedefined = [
+            { RoleName: "Admin", RoleId: "1" },
+            { RoleName: "HR", RoleId: "2" }];
+
+        element.kendoDropDownList({
+            dataSource: rolesRedefined,
+            dataTextField: "RoleName",
+            change: function (e) {
+
+            },
+            valuePrimitive: true,
+            dataValueField: "RoleId",
+            optionLabel: {
+                name: "--Select Value--",
+                id: ""
+            }
+        });
+    }
+</script>

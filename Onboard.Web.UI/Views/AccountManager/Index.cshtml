@@ -1,0 +1,683 @@
+@using Microsoft.AspNetCore.Identity
+@using Onboard.Web.UI.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@model Onboard.Web.UI.Models.HRViewModels.ManagementViewModel
+@{
+    ViewData["Title"] = "Onbaord - Account Manager";
+}
+<style>
+    .page-heading {
+        padding: 0 10px 0px 10px !important;
+        margin-bottom: 10px;
+    }
+
+    .pad-top {
+        padding-top: 15px;
+    }
+</style>
+
+<link href="~/lib/steps/jquery.steps.css" rel="stylesheet" />
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-sm-8">
+        <h2>Account Manager</h2>
+    </div>
+    <div class="col-sm-4">
+        <dl class="pull-right pad-top">
+            <button id="btn-add-candidate" class="btn btn-outline btn-primary" type="button" action="candidate-add"><i class="fa fa-user-plus"></i> Add Candidate</button>
+        </dl>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="tabs-container">
+            <ul class="nav nav-tabs">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    var user = UserManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
+                    <li class="active">
+                        <a data-toggle="tab" href="#tab-pending">
+                            @string.Format("{0} {1}'s Pending Candidates", user.FirstName, user.LastName)
+                            <span class="label label-danger" id="pending-count">@Model.PendingCandidates.Count</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a data-toggle="tab" href="#tab-recent-onboard">
+                            @string.Format("{0} {1}'s Recent Onboards", user.FirstName, user.LastName)
+                            <span class="label label-primary"> @Model.RecentOnboards.Count</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a data-toggle="tab" href="#tab-declinations">
+                            @string.Format("{0} {1}'s Declinations", user.FirstName, user.LastName)
+                            <span class="label label-primary" id="my-count">@Model.AssignedCandidates.Count</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+            <div class="tab-content">
+                <div id="tab-pending" class="tab-pane active">
+                    <div class="panel-body" id="divPending">
+                        @Html.Partial("_PendingCandidates", Model.PendingCandidates)
+                    </div>
+                </div>
+                <div id="tab-recent-onboard" class="tab-pane">
+                    <div class="panel-body">
+                        @Html.Partial("_RecentOnboards", Model.RecentOnboards)
+                    </div>
+                </div>
+                <div id="tab-declinations" class="tab-pane">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal inmodal fade" id="AddCandidate" tabindex="-1" role="dialog" aria-hidden="true">
+</div>
+<div class="modal inmodal fade" id="CandidateDetails" tabindex="-1" role="dialog" aria-hidden="true">
+</div>
+<div class="modal inmodal fade" id="AddClientContact" tabindex="-1" role="dialog" aria-hidden="true">
+</div>
+@Html.Partial("_Accept")
+<div class="modal inmodal" id="model-assign" tabindex="-1" role="dialog" aria-hidden="true">
+</div>
+<div class="modal inmodal fade" id="add-vendor-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <div class="row">
+                    <div class="col-xs-pull-4">
+                        <i class="fa fa-user-plus fa-5x primary-color"></i>
+                    </div>
+                </div>
+                <h4 class="modal-title">Add vendor</h4>
+                <small class="font-bold">Complete all required fields to add a new vendor.</small>
+            </div>
+            <div class="modal-body">
+                <form id="form-add-vendor" action="#" class="">
+                    <div id="div-add-vendor">
+                        @Html.Partial("_AddVendor", new Onboard.Web.UI.Models.DatabaseViewModels.VendorsViewModel())
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="add-vendor-save">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script src="~/lib/steps/jquery.steps.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    <script>
+        $(document).ready(function () {
+            //$('#header-strip-addon').append('<span class="input-group-addon"><h4> &nbsp;&nbsp; Human Resources</h4></span >');
+            //$('#header-strip-addon').append('<span class="input-group-addon"><button id= "btn-add-candidate" class="btn btn-outline btn-primary" type= "button" action="candidate-add"><i class="fa fa-user-plus"></i> Add Candidate</button></span >');
+        });
+
+        $(document).on('click', 'a[action="PendingCandidate-Accept"]', function () {
+            $('#Model-Accept-Name').html($(this).attr('candiate-details'));
+
+            return false;
+        }).on('click', 'a[action="PendingCandidate-Assign"]', function () {
+            $('#Model-Assign-Name').html($(this).attr('candiate-details'));
+
+            return false;
+        }).on('click', 'a[action="view-candidate"]', function () {
+            var userId = $(this).closest('tr').attr("pk-id");
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("PrepareCandiateDetails", "AccountManager")',
+                data: { 'enrollmentId': userId },
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
+                    }
+                    else {
+                        if (result.Success) {
+                            $('#CandidateDetails').html(result.Html);
+                            $('#CandidateDetails').modal({ backdrop: 'static', keyboard: false });
+                            //$('#CandidateDetails').modal('toggle');
+                        }
+                    }
+                }
+            });
+
+            return false;
+            }).on('click', 'a[action="enrollment-assign"]', function () {
+            var userId = $(this).closest('tr').attr("pk-id");
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("PrepareEnrollmentAssign", "AccountManager")',
+                data: { 'enrollmentId': userId },
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
+                    }
+                    else {
+                        if (result.Success) {
+                            $('#model-assign').html(result.Html);
+                            $('#model-assign').modal({ backdrop: 'static', keyboard: false });
+                            //$('#model-assign').modal('toggle');
+                        }
+                    }
+                }
+            });
+
+            return false;
+        }).on('click', 'button[action="assign-enrollment-save"]', function () {
+                $("#form-enrollment-assign").find(".validation-summary-errors")
+                .addClass("validation-summary-valid")
+                .removeClass("validation-summary-errors");
+
+                var validationInfo = $("#form-enrollment-assign").data("unobtrusiveValidation");
+                if (!validationInfo || !validationInfo.validate || validationInfo.validate()) {
+                    var url = '@Url.Action("EnrollmentAssign", "AccountManager")';
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: serializeRowData($("#form-enrollment-assign").serialize()),
+                        error: function () {
+                            alert("An error occurred processing the request.");
+                        },
+                        success: function (result, textStatus, xhr) {
+                            if (xhr.status === 302) {
+                                alert("Your session has expired.  Please log in.");
+                            }
+                            else {
+                                if (result.Success) {
+                                    $('#divUnassigned').html(result.Html);
+                                    $('#pending-count').html(result.Count);
+                                    //Update my grid too.
+                                    $('#divMyAssigned').html(result.MyHtml);
+                                    $('#my-count').html(result.MyCount);
+                                    $('#model-assign').modal('toggle');
+                                }
+                                else {
+                                    $('#model-assign').html(result.Html);
+                                }
+                            }
+                        }
+                    });
+                }
+
+                return false;
+            }).on('click', 'button[action="candidate-add"]', function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("PrepareCandiateAdd", "AccountManager")',
+                //data: { 'VendorId': 0 },
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
+                    }
+                    else {
+                        if (result.Success) {
+                            $('#AddCandidate').html(result.Html);
+                            $('#AddCandidate').modal({ backdrop: 'static', keyboard: false })
+                            clearError('div-add-can');
+                            $('#form-add-candidate').find('input,select').removeClass('input-validation-error');
+
+                            $("#form-add-candidate").steps({
+                                bodyTag: "fieldset",
+                                onStepChanging: function (event, currentIndex, newIndex) {
+                                    var form = $(this);
+                                    // Clean up if user went backward before
+                                    if (currentIndex < newIndex) {
+                                        // To remove error styles
+                                        $(".body:eq(" + newIndex + ") label.error", form).remove();
+                                        $(".body:eq(" + newIndex + ") .error", form).removeClass("error");
+                                    }
+                                    else {
+                                        $('#summary-validation').addClass('validation-summary-valid');
+                                        $('#summary-validation').removeClass('validation-summary-errors');
+                                    }
+
+                                    if (currentIndex > newIndex) {
+                                        // Always allow going backward even if the current step contains invalid fields!
+                                        return true;
+                                    }
+                                    else {
+                                        form.removeData("validator")
+                                        form.removeData("unobtrusiveValidation");
+                                        $.validator.unobtrusive.parse(form);
+                                        var validationInfo = form.data("unobtrusiveValidation");
+                                        var isValid = validationInfo.validate();
+                                        var clientError = displayErrorsinTab(currentIndex);
+
+                                        return isValid && clientError;
+                                    }
+                                },
+                                onStepChanged: function (event, currentIndex, priorIndex) {
+                                    //// Suppress (skip) "Warning" step if the user is old enough and wants to the previous step.
+                                    //if (currentIndex === 2 && priorIndex === 3) {
+                                    //    $(this).steps("previous");
+                                    //}
+                                    if (currentIndex == 2)
+                                    {
+                                        if ($('#TaxStatus').val() == "W2" || $('#TaxStatus').val() == "1099") {
+                                            // finish button
+                                            $("ul[aria-label*='Pagination']").find('li:nth-child(2)').hide();
+                                            $("ul[aria-label*='Pagination']").find('li:nth-child(3)').show();
+                                        }
+                                        else {
+                                            $("ul[aria-label*='Pagination']").find('li:nth-child(2)').show();
+                                            $("ul[aria-label*='Pagination']").find('li:nth-child(3)').hide();
+                                        }
+                                    }
+
+                                    if (currentIndex == 1 || currentIndex == 2) {
+                                        $('.wizard .content').animate({ height: '380px' }, "slow");
+                                    }
+                                    else if (currentIndex == 3) {
+                                        $('.wizard .content').animate({ height: '250px' }, "slow");
+                                    }
+                                    else {
+                                        $('.wizard .content').animate({ height: '320px' }, "slow");
+                                    }
+                                },
+                                onFinishing: function (event, currentIndex) {
+                                    var form = $(this);
+
+                                    // Disable validation on fields that are disabled.
+                                    // At this point it's recommended to do an overall check (mean ignoring only disabled fields)
+                                    form.validate().settings.ignore = ":disabled";
+
+                                    // Start validation; Prevent form submission if false
+                                    return form.valid();
+                                },
+                                onFinished: function (event, currentIndex) {
+                                    var clientError = displayErrorsinTab(currentIndex);
+                                    if (clientError) {
+                                        $('#TaxStatus').removeAttr('disabled');
+                                        var form = $(this);
+                                        var url = '@Url.Action("AddCandiate", "AccountManager")';
+
+                                        $.ajax({
+                                            type: "POST",
+                                            url: url,
+                                            data: serializeRowData(form.serialize()),
+                                            error: function () {
+                                                alert("An error occurred processing the request.");
+                                            },
+                                            success: function (result, textStatus, xhr) {
+                                                if (xhr.status === 302) {
+                                                    alert("Your session has expired.  Please log in.");
+                                                }
+                                                else {
+                                                    if (result.Success) {
+                                                        $('#divUnassigned').html(result.Html);
+                                                        $('#pending-count').html(result.Count);
+                                                        $('#AddCandidate').modal('toggle');
+
+                                                    }
+                                                    else {
+                                                        $('#AddCandidate').html(result.Html);
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            })
+
+            return false;
+            }).on('change', '#Client', function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("RefreshClientContacts", "AccountManager")',
+                    data: { 'clientId': $(this).val() },
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#div-client-contact').html(result.Html);
+                            }
+                        }
+                    }
+                });
+
+                return false;
+            }).on('click', 'button[data-action="add-client-contact"]', function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("PrepareAddClientContact", "AccountManager")',
+                    data: { 'clientId': $('#Client').val() },
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#AddClientContact').html(result.Html);
+                                $('#AddClientContact').modal({ backdrop: 'static', keyboard: false });
+                            }
+                        }
+                    }
+                });
+
+                return false;
+            }).on('click', 'button[action="add-client-contact-save"]', function () {
+                $("#form-client-contact").find(".validation-summary-errors")
+                    .addClass("validation-summary-valid")
+                    .removeClass("validation-summary-errors");
+
+                var validationInfo = $("#form-client-contact").data("unobtrusiveValidation");
+                if (!validationInfo || !validationInfo.validate || validationInfo.validate()) {
+
+                    var url = '@Url.Action("AddClientContact", "AccountManager")';
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $("#form-client-contact").serialize(),
+                        error: function () {
+                            alert("An error occurred processing the request.");
+                        },
+                        success: function (result, textStatus, xhr) {
+                            if (xhr.status === 302) {
+                                alert("Your session has expired.  Please log in.");
+                            }
+                            else {
+                                if (result.Success) {
+                                    $('#div-client-contact').html(result.Html);
+                                    $('#AddClientContact').modal('toggle');
+                                }
+                                else {
+                                    $('#AddClientContact').html(result.Html);
+                                }
+                            }
+                        }
+                    });
+                }
+            }).on('click', 'button[data-action="add-vendor"]', function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("PrepareAddVendor", "Database")',
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#div-add-vendor').html(result.Html);
+                                $('#add-vendor-modal').modal({ backdrop: 'static', keyboard: false });
+                            }
+                        }
+                    }
+                });
+            }).on('click', '#add-vendor-save', function () {
+                $("#form-add-vendor").find(".validation-summary-errors")
+                    .addClass("validation-summary-valid")
+                    .removeClass("validation-summary-errors");
+
+                var validationInfo = $("#form-add-vendor").data("unobtrusiveValidation");
+                if (!validationInfo || !validationInfo.validate || validationInfo.validate()) {
+
+                    var url = '@Url.Action("AddVendor", "AccountManager")';
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $("#form-add-vendor").serialize(),
+                        error: function () {
+                            alert("An error occurred processing the request.");
+                        },
+                        success: function (result, textStatus, xhr) {
+                            if (xhr.status === 302) {
+                                alert("Your session has expired.  Please log in.");
+                            }
+                            else {
+                                if (result.Success) {
+                                    $('#div-vendor').html(result.Html);
+                                    $('#add-vendor-modal').modal('toggle');
+                                }
+                                else {
+                                    $('#div-add-vendor').html(result.Html);
+                                }
+                            }
+                        }
+                    });
+                }
+            }).on('change', '#TaxStatus', function () {
+        if ($(this).val() == "W2" || $(this).val() == "1099") {
+                        // finish button
+                        //$("ul[aria-label*='Pagination']").find('li:nth-child(3)').show();
+                        $("ul[role*='tablist']").find('li:nth-child(4)').hide();
+                    }
+                    else {
+                        //$("ul[aria-label*='Pagination']").find('li:nth-child(3)').hide();
+                        $("ul[role*='tablist']").find('li:nth-child(4)').show();
+        }
+
+        if ($(this).val() == "C2C") {
+            //remove star from email, address, ssn, phone
+            $('#lbl-ssn').html("SSN ");
+            $('#lbl-email').html("Email ");
+            $('#lbl-address').html("Address ");
+            $('#lbl-city').html("City ");
+            $('#lbl-state').html("State ");
+            $('#lbl-zip').html("Zip ");
+            $('#lbl-phone').html("Phone ");
+        }
+        else {
+            $('#lbl-ssn').html("SSN *");
+            $('#lbl-email').html("Email *");
+            $('#lbl-address').html("Address *");
+            $('#lbl-city').html("City *");
+            $('#lbl-state').html("State *");
+            $('#lbl-zip').html("Zip *");
+            $('#lbl-phone').html("Phone *");
+        }
+
+                return false;
+            }).on('change', '#Internal', function () {
+                if ($(this).val() == "Internal") {
+                    $('#TaxStatus').val('W2');
+                    $('#TaxStatus').attr('disabled', 'disabled');
+                    $('#div-pm').hide();
+                    $('#div-end-client').hide();
+                    $('#div-bill-rate').hide();
+                    $("ul[role*='tablist']").find('li:nth-child(4)').hide();
+                }
+                else {
+                    $('#TaxStatus').removeAttr('disabled');
+                    $('#div-pm').show();
+                    $('#div-end-client').show();
+                    $('#div-bill-rate').show();
+                    if (!($(this).val() == "W2" || $(this).val() == "1099"))
+                    {
+                        $("ul[role*='tablist']").find('li:nth-child(4)').show();
+                    }
+                }
+
+                return false;
+            });
+
+        function serializeRowData(element) {
+            var sdata = element;
+            var $data = element.split("&");
+
+            $.each($data, function (e) {
+                if ($data[e].split("=")[0] === "Internalx") {
+                    var internal = $data[e].split("=")[1];
+                    sdata += "&IsInternal=";
+                    if (internal == "I") {
+                        sdata += "true";
+                    }
+                    else {
+                        sdata += "false";
+                    }
+                }
+            });
+
+            return sdata;
+        }
+
+        function clearError(containerId) {
+            /// <summary>Clear the specified error panel.</summary>
+            /// <param name="containerId" type="String">Id of the container for the error panel.</param>
+            var errorPanelId = containerId + "-error-panel";
+            $("#" + errorPanelId).html('');
+            $("#" + errorPanelId).removeClass("validation-summary-errors");
+
+            // also try to find a validation summary and hide.
+            $("#" + containerId).find(".validation-summary-errors").addClass("validation-summary-valid").removeClass("validation-summary-errors");
+        }
+
+        function showError(containerId, messages) {
+            /// <summary>OMH: Show the error panel.</summary>
+            /// <param name="containerId" type="String">Id of the container for the error panel.</param>
+            /// <param name="messages" type="String">The message to display in the error panel.</param>
+            var errorPanelId = containerId + "-error-panel";
+            if (messages.length > 0) {
+                $("#" + errorPanelId).addClass("validation-summary-errors");
+            }
+            var $display = $("#" + errorPanelId);
+            if ($display.length === 0) {
+                $display = $("<div id='" + errorPanelId + "' class='error-panel alert alert-danger'></div>");
+                $("#" + containerId).prepend($display);
+            }
+            else {
+                $("#" + errorPanelId).empty();
+            }
+
+            $display.append("<span>The following errors occurred:</span>");
+            var $list = $("<ul></ul>");
+            var arrayLength = messages.length;
+            for (var index = 0; index < arrayLength; index += 1) {
+                $list.append("<li>" + messages[index] + "</li>");
+            }
+
+            $display.append($list);
+        }
+
+        function displayErrorsinTab(currentIndex) {
+            var isValid = true;
+            switch (currentIndex) {
+                case 0:
+                    var tabItems = [["Internal", "Internal is Required"], ["TaxStatus", "Tax Status is Required"]];
+                    if ($('#Internal').val() != "Internal") {
+                        tabItems.push(["PortfolioManager", "Portfolio Manager is Required"]);
+                    }
+                    var message = [];
+                    $.each(tabItems, function (index, item) {
+                        if ($('#' + item[0]).val() == "") {
+                            $('#' + item[0]).addClass("input-validation-error");
+                            message.push(item[1]);
+                            isValid = false;
+                        }
+                        else {
+                            $('#' + item[0]).removeClass("input-validation-error");
+                        }
+                    });
+
+                    if (!isValid) {
+                        showError('div-add-can', message);
+                    }
+                    else {
+                        clearError('div-add-can');
+                    }
+                    break;
+                case 1:
+
+                    var tabItems = [["FirstName", "First Name is Required"], ["LastName", "Last Name is Required"], ["VisaStatus", "Visa Status is Required"], ["VisaExpiration", "Visa Expiration is Required"]];
+
+                    if ($('#TaxStatus').val() != "C2C") {
+                        tabItems.push(["SSN", "SSN is Required"], ["Email", "Email is Required"], ["Address", "Address is Required"], ["City", "City is Required"], ["State", "State is Required"], ["Zip", "Zip is Required"], ["Phone", "Phone is Required"]);
+                    }
+
+                    var message = [];
+                    $.each(tabItems, function (index, item) {
+                        if ($('#' + item[0]).val() == "") {
+                            $('#' + item[0]).addClass("input-validation-error");
+                            message.push(item[1]);
+                            isValid = false;
+                        }
+                        else {
+                            $('#' + item[0]).removeClass("input-validation-error");
+                        }
+                    });
+
+                    if (!isValid) {
+                        showError('div-add-can', message);
+                    }
+                    else {
+                        clearError('div-add-can');
+                    }
+
+                    break;
+                case 2:
+                    var tabItems = [["Client", "Client is Required"], ["ClientContact", "Client Contact is Required"], ["JobTitle", "Job Title is Required"], ["Duration", "Duration is Required"], ["PayRate", "Pay Rate is Required"]];
+                    if ($('#Internal').val() != "Internal") {
+                        tabItems.push(["EndClient", "End Client is Required"], ["BillRate", "Bill Rate is Required"]);
+                    }
+                    var message = [];
+                    $.each(tabItems, function (index, item) {
+                        if ($('#' + item[0]).val() == "") {
+                            $('#' + item[0]).addClass("input-validation-error");
+                            message.push(item[1]);
+                            isValid = false;
+                        }
+                        else {
+                            $('#' + item[0]).removeClass("input-validation-error");
+                        }
+                    });
+
+                    var billRate = parseFloat($("#BillRate").val());
+                    var payRate = parseFloat($("#PayRate").val());
+                    if ($('#Internal').val() != "Internal" && payRate > billRate) {
+                        message.push("The pay rate can not exceed the bill rate.");
+                        isValid = false;
+                    }
+
+                    if (!isValid) {
+                        showError('div-add-can', message);
+                    }
+                    else {
+                        clearError('div-add-can');
+                    }
+                    break;
+                case 3:
+                    var tabItems = [["Vendor", "Vendor is Required"]];
+                    var message = [];
+                    $.each(tabItems, function (index, item) {
+                        if ($('#' + item[0]).val() == "") {
+                            $('#' + item[0]).addClass("input-validation-error");
+                            message.push(item[1]);
+                            isValid = false;
+                        }
+                        else {
+                            $('#' + item[0]).removeClass("input-validation-error");
+                        }
+                    });
+
+                    if (!isValid) {
+                        showError('div-add-can', message);
+                    }
+                    else {
+                        clearError('div-add-can');
+                    }
+                    break;
+            }
+
+            return isValid;
+        }
+    </script>
+}
+
+

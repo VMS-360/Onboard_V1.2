@@ -1,0 +1,156 @@
+@model Onboard.Web.UI.Models.HRViewModels.OnboardingDetails
+<form id="form-edit-candidate" action="#" class="">
+    @Html.ValidationSummary("The following errors occurred:")
+    @Html.HiddenFor(m => m.EnrollmentId)
+    @Html.HiddenFor(m => m.VendorContactId)
+    @Html.HiddenFor(m => m.VendorId)
+    <div class="row">
+        <div class="col-lg-5">
+            <div class="m-b-md">
+                <h2>Candidate Details</h2>
+            </div>
+            <dl class="dl-horizontal">
+                <dt>Email:</dt>
+                <dd class="text-navy">
+                    <span category="label">@Model.Email</span>
+                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Address:</dt>
+                <dd>
+                    <span category="label">@Model.Address</span>
+                    @Html.TextBoxFor(model => model.AddressLine1, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt></dt>
+                <dd>
+                    <div class="row">
+                        <div class="col-sm-4 no-padding">
+                            @Html.TextBoxFor(model => model.City, new { @class = "form-control", category = "editor" })
+                        </div>
+                        <div class="col-sm-4 no-padding">
+                            @Html.TextBoxFor(model => model.State, new { @class = "form-control", category = "editor" })
+                        </div>
+                        <div class="col-sm-4 ">
+                            @Html.TextBoxFor(model => model.Zip, new { @class = "form-control", category = "editor" })
+                        </div>
+                    </div>
+                </dd>
+                <dt>Phone:</dt>
+                <dd>
+                    <span category="label">@Model.PhoneString</span>
+                    @Html.TextBoxFor(model => model.PhoneString, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Position:</dt>
+                <dd>
+                    <span category="label">@Model.Position</span>
+                    @Html.TextBoxFor(model => model.Position, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Bill Rate:</dt>
+                <dd>
+                    <span category="label">$@Model.BillRate</span>
+                    @Html.TextBoxFor(model => model.BillRate, new { @class = "form-control", category = "editor" })
+                    @*@(Html.Kendo().NumericTextBox<decimal>()
+                                    .Name("BillRate")
+                                    .Format("c")
+                                    .Min(0)
+                                    .Max(300)
+                                    .HtmlAttributes(new { style = "width: 100%", title = "currency", value="@Model.BillRate" })
+                    )*@
+                </dd>
+                <dt>Pay Rate:</dt>
+                <dd>
+                    <span category="label">$@Model.PayRate</span>
+                    @Html.TextBoxFor(model => model.PayRate, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Start Date:</dt>
+                <dd>
+                    <span category="label">@Model.StartDate</span>
+                    <span category="editor">
+                        @(Html.Kendo().DatePicker()
+                                      .Name("StartDate")
+                                      .Value(@Model.StartDate)
+                                      .HtmlAttributes(new { title = "Start Date"})
+                        )
+                    </span>
+                </dd>
+                <dt>End Date:</dt>
+                <dd>
+                    <span category="label">@Model.EndDate</span>
+                    @(Html.Kendo().DatePicker()
+                                      .Name("EndDate")
+                                      .Value(@Model.EndDate)
+                                      .HtmlAttributes(new { title = "End Date" })
+                    )
+                </dd>
+                <dt>Duration:</dt>
+                <dd>
+                    <span category="label">@Model.Duration</span>
+                    @Html.TextBoxFor(model => model.Duration, new { @class = "form-control", category = "editor" })
+                </dd>
+            </dl>
+        </div>
+        <div class="col-lg-5" id="cluster_info">
+            <div class="m-b-md">
+                <h2>Vendor Details</h2>
+            </div>
+            <dl class="dl-horizontal">
+                <dt>Legal Name:</dt>
+                <dd>
+                    <span category="label">@Model.VendorName</span>
+                    @Html.TextBoxFor(model => model.VendorName, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Address:</dt>
+                <dd>
+                    <span category="label">@Model.VendorAddress</span>
+                    @Html.TextBoxFor(model => model.VendorAddressLine1, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt></dt>
+                <dd>
+                    <div class="row">
+                        <div class="col-sm-4 no-padding">
+                            @Html.TextBoxFor(model => model.VendorCity, new { @class = "form-control", category = "editor" })
+                        </div>
+                        <div class="col-sm-4 no-padding">
+                            @Html.TextBoxFor(model => model.VendorState, new { @class = "form-control", category = "editor" })
+                        </div>
+                        <div class="col-sm-4 ">
+                            @Html.TextBoxFor(model => model.VendorZip, new { @class = "form-control", category = "editor" })
+                        </div>
+                    </div>
+                </dd>
+                <dt>Federal ID:</dt>
+                <dd>
+                    <span category="label">@Model.FederalId</span>
+                    @Html.TextBoxFor(model => model.FederalId, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Contact Name:</dt>
+                <dd>
+                    <span category="label">@Model.ContactName</span>
+
+                    @Html.TextBoxFor(model => model.ContactFirstName, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Contact Email:</dt>
+                <dd class="text-navy">
+                    <span category="label">@Model.ContactEmail</span>
+                    @Html.TextBoxFor(model => model.ContactEmail, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Signatory Name:</dt>
+                <dd>
+                    <span category="label">@Model.SignatoryName</span>
+                    @Html.TextBoxFor(model => model.SignatoryName, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Signatory Email:</dt>
+                <dd class="text-navy">
+                    <span category="label">@Model.SignatoryEmail</span>
+                    @Html.TextBoxFor(model => model.SignatoryEmail, new { @class = "form-control", category = "editor" })
+                </dd>
+            </dl>
+        </div>
+        <div class="col-lg-2" id="cluster_info">
+            <div class="pull-right">
+                <a href="#" action="edit-candidate" class="btn btn-white btn-xs">Edit Candidate</a>
+                <a href="#" action="save-candidate" class="btn btn-white btn-xs">Save Candidate</a>
+                <a href="#" action="cancel-candidate" class="btn btn-white btn-xs">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>

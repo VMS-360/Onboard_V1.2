@@ -1,0 +1,64 @@
+@model Onboard.Web.UI.Models.HRViewModels.CandidateDetailsViewModel
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <div class="row">
+                    <div class="col-xs-pull-4" >
+                        <i class="fa fa-info-circle fa-5x primary-color"></i>
+                    </div>
+                </div>
+                <h4 class="modal-title">@Model.FirstName @Model.LastName</h4>
+                <small class="font-bold">Candidate information for the above candidate.</small>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <dl class="dl-horizontal pull-right">
+                            <dt>Status:</dt>
+                            @if (Model.StatusIndicator == "O")
+                            {
+                                <dd><span class="label label-primary">Onboard </span></dd>
+                            }
+                            else
+                            {
+                                <dd><span class="label label-warning">Pending </span></dd>
+                            }
+                            
+                        </dl>
+                    </div>
+                    <div class="col-lg-5">
+                        <dl class="dl-horizontal">
+                            <dt>Tax Status:</dt>
+                            <dd>@Model.BillingType </dd>
+                            <dt>&nbsp;</dt>
+                            <dd>&nbsp;</dd>
+                            <dt>Client:</dt>
+                            <dd class="text-navy">@Model.ClientName </dd>
+                            <dt>Client Contact:</dt>
+                            <dd class="text-navy">@Model.ClientContact</dd>
+                            <dt>End Client:</dt>
+                            <dd class="text-navy">@Model.EndClient</dd>
+                        </dl>
+                    </div>
+                    <div class="col-lg-7" id="cluster_info">
+                        <dl class="dl-horizontal">
+                            <dt>Assigned To:</dt>
+                            <dd>None</dd>
+                            <dt>&nbsp;</dt>
+                            <dd>&nbsp;</dd>
+                            <dt>Vendor:</dt>
+                            <dd class="text-navy">@Model.VendorName</dd>
+                            <dt>Date created:</dt>
+                            <dd>@Model.DateCreatedString </dd>
+                            <dt>Account Manager:</dt>
+                            <dd class="text-navy">@Model.AccountManager</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>

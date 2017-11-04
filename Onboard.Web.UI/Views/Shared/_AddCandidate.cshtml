@@ -1,0 +1,191 @@
+@model Onboard.Web.UI.Models.HRViewModels.AddCandidateViewModel
+<style>
+    /*.k-datetimepicker {
+        height: 31.54px !important;
+    }*/
+    span[aria-controls=VisaExpiration_dateview] {
+        height: inherit !important;
+    }
+</style>
+
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <div class="row">
+                <div class="col-xs-pull-4">
+                    <i class="fa fa-user-plus fa-5x primary-color"></i>
+                </div>
+            </div>
+            <h4 class="modal-title">Add Candidate</h4>
+            <small class="font-bold">Complete all required fields to add a new candidate to onboard.</small>
+        </div>
+        <div class="modal-body">
+            <div id="div-add-can-error-panel"> test</div>
+            <form id="form-add-candidate" action="#" class="wizard-big">
+                <h1>Initial Information</h1>
+                <fieldset>
+                    <h2>Initial Information</h2>
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="form-group">
+                                <label>Internal *</label>
+                                <select class="form-control" id="Internal" name="Internal">
+                                    <option></option>
+                                    <option>Internal</option>
+                                    <option>External</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Tax Status *</label>
+                                <select asp-for="TaxStatus"
+                                        asp-items="Model.TaxStatuses" class="form-control">
+                                    <option selected></option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="div-pm">
+                                <label>Portfolio Manager *</label>
+                                <select asp-for="PortfolioManager"
+                                        asp-items="Model.PortfolioManagers" class="form-control">
+                                    <option selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                        </div>
+                    </div>
+                </fieldset>
+                <h1>Candidate Information</h1>
+                <fieldset>
+                    <h2>Candidate Information</h2>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group form-group-height">
+                                <div class="col-sm-6 no-padding">
+                                    <label>First Name *</label>
+                                    <input id="FirstName" name="FirstName" type="text" class="form-control">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>Last Name *</label>
+                                    <input id="LastName" name="LastName" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Visa Status *</label>
+                                <select asp-for="VisaStatus"
+                                        asp-items="Model.VisaTypes" class="form-control"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Visa Expiration *</label>
+                                <input id="VisaExpiration" name="VisaExpiration" type="date" class="form-control">
+                                @*@(Html.Kendo().DatePicker()
+                                      .Name("VisaExpiration")
+                                      .Value("10/10/2011")
+                                      .HtmlAttributes(new { title = "Visa Expiration" })
+                                    )*@
+                            </div>
+                            <div class="form-group">
+                                <label id="lbl-ssn">SSN *</label>
+                                @(Html.Kendo().MaskedTextBox()
+                                      .Name("SSN")
+                                      .Mask("000-00-0000")
+                                      .Value("")
+                                )
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label id="lbl-email">Email *</label>
+                                <input id="Email" name="Email" type="email" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label id="lbl-address">Address *</label>
+                                <input id="Address" name="Address" type="text" class="form-control">
+                            </div>
+                            <div class="form-group form-group-height">
+                                <div class="col-sm-4 no-padding">
+                                    <label id="lbl-city">City *</label>
+                                    <input id="City" name="City" type="text" class="form-control">
+                                </div>
+                                <div class="col-sm-4">
+                                    <label id="lbl-state">State *</label>
+                                    <input id="State" name="State" type="text" class="form-control">
+                                </div>
+                                <div class="col-sm-4 no-padding">
+                                    <label id="lbl-zip">Zip *</label>
+                                    <input id="Zip" name="Zip" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label id="lbl-phone">Phone *</label>
+                                @(Html.Kendo().MaskedTextBox()
+                                      .Name("Phone")
+                                      .Mask("(999) 000-0000")
+                                      .Value("")
+                                )
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <h1>Client Information</h1>
+                <fieldset>
+                    <h2>Client Information</h2>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>Client *</label>
+                                <select asp-for="Client"
+                                        asp-items="Model.Clients" class="form-control"></select>
+                            </div>
+                            <div id="div-client-contact" class="form-group">
+                                @Html.Partial("_CandiateClientContact", Model.ClientContacts)
+                            </div>
+                            <div id="div-end-client">
+                                @Html.Partial("_CandiateEndClient", Model.EndClients)
+                            </div>
+                            <div class="form-group">
+                                <label>Job Title *</label>
+                                <input id="JobTitle" name="JobTitle" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>Duration *</label>
+                                <select class="form-control" id="Duration" name="Duration">
+                                    <option></option>
+                                    <option value="0-6">6 Months</option>
+                                    <option value="1-0">1 Year</option>
+                                    <option value="1-6">1 Year 6 Months</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="div-bill-rate">
+                                <label>Bill Rate *</label>
+                                <input id="BillRate" name="BillRate" type="text" class="form-control" data-mask="$999.99" placeholder="">
+                            </div>
+                            <div class="form-group">
+                                <label>Pay Rate *</label>
+                                <input id="PayRate" name="PayRate" type="text" class="form-control" data-mask="$999.99" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <h1>Vendor Information</h1>
+                <fieldset>
+                    <h2>Vendor Information</h2>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="div-vendor">
+                                @Html.Partial("_CandiateVendor", Model.Vendors)
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
+        </div>
+    </div>
+</div>

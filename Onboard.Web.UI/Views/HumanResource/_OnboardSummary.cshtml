@@ -1,0 +1,68 @@
+@model Onboard.Web.UI.Models.HRViewModels.CandidateViewModel
+
+<div class="row">
+    <div class="col-lg-5">
+        <div class="m-b-md">
+            <h2>@Model.CandidateVendor</h2>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <dl class="dl-horizontal">
+            <dt>Assigned To:</dt>
+            <dd class="text-navy">@Model.AssignedTo</dd>
+        </dl>
+    </div>
+    <div class="col-lg-3">
+        <dl class="dl-horizontal pull-right">
+            <dt>Status:</dt>
+            <dd><span class="label label-primary" id="span-status">Pending</span></dd>
+        </dl>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-5">
+        <dl class="dl-horizontal">
+            <dt>Tax Status:</dt>
+            <dd>@Model.BillingType</dd>
+            <dt>&nbsp;</dt>
+            <dd>&nbsp;</dd>
+            <dt>Client:</dt>
+            <dd class="text-navy">@Model.ClientName </dd>
+            <dt>Client Contact:</dt>
+            <dd class="text-navy">TJ Miller</dd>
+            <dt>Account Manager:</dt>
+            <dd class="text-navy">@Model.AccountManager</dd>
+            <dt>End Client:</dt>
+            <dd class="text-navy">ATT</dd>
+        </dl>
+    </div>
+    <div class="col-lg-7" id="cluster_info">
+        <dl class="dl-horizontal">
+            <dt>Vendor:</dt>
+            <dd class="text-navy">@Model.VendorName</dd>
+            <dt>&nbsp;</dt>
+            <dd>&nbsp;</dd>
+            <dt>Date created:</dt>
+            <dd>@Model.Created </dd>
+            <dt>Account Manager:</dt>
+            <dd class="text-navy">@Model.AccountManager</dd>
+            <dt>Last update:</dt>
+            <dd>@Model.Updated</dd>
+            <dt>Update by:</dt>
+            <dd class="text-navy">@Model.ModifiedBy</dd>
+        </dl>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <dl class="dl-horizontal">
+            <dt>Completed:</dt>
+            <dd>
+                <div class="progress progress-striped active m-b-sm">
+                    <div style="width: @Model.PercentComplete%;" class="progress-bar"></div>
+                </div>
+                <small>Onboarding completion of <strong><span id="span-percent-complete">@Model.PercentComplete</span>%</strong></small>
+            </dd>
+        </dl>
+    </div>
+</div>

@@ -1,0 +1,97 @@
+<style>
+    #UserGrid1 {
+        height: 830px !important;
+    }
+
+    #UserGrid1 .k-grid,
+    .k-grid-header-wrap,
+    .k-grid-header th,
+    .k-grid-content > table > tbody > tr > td {
+        border: 0;
+    }
+
+        #UserGrid1 .k-button {
+            height: 20px !important;
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
+        }
+
+        #UserGrid1 .k-i-edit {
+            height: 16px !important;
+            padding-bottom: 1px !important;
+        }
+
+        #UserGrid1 .k-i-edit
+        {
+           
+        }
+
+        #UserGrid1 .k-button.k-button-icontext.k-grid-edit {
+            width: 10px !important;
+            border: none !important;
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        #UserGrid1 tbody.k-icon
+        {
+            display:none;
+        }
+
+    /*.k-grid-custombtnname span:before {
+        font-family: 'FontAwesome';
+        content: "\f00c";
+    }*/
+</style>
+
+@(Html.Kendo().Grid<Onboard.Web.UI.Models.MaintenanceViewModels.OnboardUserViewModel>()
+    .Name("UserGrid1")
+    .Columns(columns =>
+    {
+        columns.Bound(p => p.UserId).Width(25).Title(" ").Filterable(false).ClientTemplate("<a href='' action='edit-user' title='User Details' user-id='#=UserId#'><i class='fa fa-binoculars'></i></a>").HtmlAttributes(new { style = "text-align: center" });
+        columns.Bound(p => p.UserId).Hidden(true);
+        columns.Bound(p => p.UserName).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+        columns.Bound(p => p.FirstName).Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+        columns.Bound(p => p.LastName).Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+        columns.Bound(p => p.Email).Width(190).Filterable(ftb => ftb.Multi(true).Search(true)).ClientTemplate("<a href='mailto:#=Email#'>#=Email#</a>");
+        columns.ForeignKey(p => p.RoleId, (System.Collections.IEnumerable)ViewData["roles"], "RoleId", "RoleName").Title("Role").Width(120).Filterable(ftb => ftb.Multi(true));
+        columns.Bound(p => p.IsInternal).Width(50).Title("Internal").ClientTemplate("# if (IsInternal) { # <i class='fa fa-check' aria-hidden='true'></i> # } #").HtmlAttributes(new { style = "text-align: left" });
+        columns.Bound(p => p.UserId).Width(70).Title(" ").Filterable(false).ClientTemplate("<a href='' action='delete-user' title='Delete User' user-id='#=UserId#'>" +
+            "<i class='fa fa-trash fa-lg' style='color: \\#D6695B'></i></a>" +
+            "<a href='' action='grd-edit-user'>" +
+            "<i class='fa fa-pencil-square-o fa-lg' title='Edit User' style='color: \\#6595C6; padding-left: 10px;'></i>" +
+            "</a>" ).HtmlAttributes(new { style = "text-align: left" });
+        //columns.Bound(p => p.UserId).Width(25).Title(" ").Filterable(false).ClientTemplate("<a href='' action='grd-edit-user'><i class='fa fa-pencil-square-o' style='color: \\#D6695B'></i></a>").HtmlAttributes(new { style = "text-align: center" });
+    })
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Sortable()
+    .Pageable()
+    .Scrollable()
+    .Resizable(resize => resize.Columns(true))
+    //.Reorderable(reorderable => reorderable.Columns(true))
+    .Filterable()
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+        .Events(events => events.Error("error_handler"))
+        .Model(model =>
+        {
+            model.Id(p => p.UserId);
+            model.Field(p => p.UserId).Editable(false);
+            model.Field(p => p.IsSelected).Editable(false);
+            model.Field(p => p.UserName).Editable(false);
+        })
+        .PageSize(25)
+        .Read(read => read.Action("GetUsers", "Maintenance"))
+        .Update(update => update.Action("UpdateUser", "Maintenance"))
+    )
+)
+
+<script type="text/javascript">
+
+    function showDetails(e) {
+        e.preventDefault();
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+    }
+</script>

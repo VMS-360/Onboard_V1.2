@@ -1,0 +1,207 @@
+@model IEnumerable<Onboard.Web.UI.Models.DatabaseViewModels.VendorsViewModel>
+    @{
+        ViewData["Title"] = "Onbaord - Vendors";
+    }
+    <style>
+        .row-select {
+            background-color: #5a8dc2;
+        }
+    </style>
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-sm-8">
+            <h2>Vendors</h2>
+            <ol class="breadcrumb">
+                <li>
+                    Database
+                </li>
+                <li class="active">
+                    <strong>Vendors</strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-sm-4">
+            <dl class="breadcrumb-padding pull-right">
+                <a href="#" class="btn btn-white btn-sm" action="add-vendor"><i class="fa fa-plus"></i> Add Vendor </a>
+            </dl>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="wrapper wrapper-content animated fadeInUp">
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <div class="m-b-md col-lg-9">
+                            <h2>Vendors</h2>
+                        </div>
+                        <div class="col-lg-3">
+                            <dl class="dl-horizontal pull-right">
+                                <span id="vendor-count">@Model.Count()</span>
+                                Vendors
+                            </dl>
+                        </div>
+                        <div class="row m-b-sm m-t-sm">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="text" placeholder="Search" class="input-sm form-control"> <span class="input-group-btn">
+                                        <button type="button" class="btn btn-sm btn-primary" action="search-vendor"> Go!</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="vendors-list">
+                            @Html.Partial("_VendorList", Model)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div id="vendor-details">
+                @Html.Partial("_VendorDetails", new Onboard.Web.UI.Models.DatabaseViewModels.VendorsViewModel())
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal fade" id="add-vendor-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <div class="row">
+                        <div class="col-xs-pull-4">
+                            <i class="fa fa-user-plus fa-5x primary-color"></i>
+                        </div>
+                    </div>
+                    <h4 class="modal-title">Add vendor</h4>
+                    <small class="font-bold">Complete all required fields to add a new vendor.</small>
+                </div>
+                <div class="modal-body">
+                    <form id="form-add-vendor" action="#" class="">
+                        <div id="div-add-vendor">
+                            @Html.Partial("_AddVendor", new Onboard.Web.UI.Models.DatabaseViewModels.VendorsViewModel())
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="add-vendor-save">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @section scripts{
+        <script>
+        $(document).ready(function () {
+
+        }).on('click', 'button[action="search-vendor"]', function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("VendorSearch", "Database")',
+                data: { 'searchString': $('input[placeholder="Search"]').val() },
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
+                    }
+                    else {
+                        if (result.Success) {
+                            $('#vendors-list').html(result.Html);
+                        }
+                    }
+                }
+            });
+        }).on('click', 'a[action="view-vendor"]', function () {
+            return false;
+                @*var vendorId = $(this).closest('tr').attr("pk-id");
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("VendorDetails", "Database")',
+                    data: { 'vendorId': vendorId },
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#vendor-details').html(result.Html);
+                            }
+                        }
+                    }
+                });*@
+        }).on('click', 'a[action="add-vendor"]', function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("PrepareAddVendor", "Database")',
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
+                    }
+                    else {
+                        if (result.Success) {
+                            $('#div-add-vendor').html(result.Html);
+                            $('#add-vendor-modal').modal({ backdrop: 'static', keyboard: false });
+                        }
+                    }
+                }
+            });
+        }).on('click', '#add-vendor-save', function () {
+            $("#form-add-vendor").find(".validation-summary-errors")
+                .addClass("validation-summary-valid")
+                .removeClass("validation-summary-errors");
+
+            var validationInfo = $("#form-add-vendor").data("unobtrusiveValidation");
+            if (!validationInfo || !validationInfo.validate || validationInfo.validate()) {
+
+                var url = '@Url.Action("AddVendor", "Database")';
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: $("#form-add-vendor").serialize(),
+                    error: function () {
+                        alert("An error occurred processing the request.");
+                    },
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#vendors-list').html(result.Html);
+                                $('#vendor-count').html(result.Count);
+                                $('#add-vendor-modal').modal('toggle');
+                            }
+                            else {
+                                $('#div-add-vendor').html(result.Html);
+                            }
+                        }
+                    }
+                });
+            }
+        }).on('click', '#Vendor-Lists td', function () {
+            $("#Vendor-Lists td").removeClass("row-select");
+            $(this).closest('tr').find('td').addClass("row-select");
+
+            var vendorId = $(this).closest('tr').attr("pk-id");
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("VendorDetails", "Database")',
+                    data: { 'vendorId': vendorId },
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#vendor-details').html(result.Html);
+                            }
+                        }
+                    }
+                });
+        });
+
+        $(document).ready(function () {
+            $('#Vendor-Lists td').css('cursor', 'pointer');
+        });
+        </script>
+    }

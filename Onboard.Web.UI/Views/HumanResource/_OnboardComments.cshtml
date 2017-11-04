@@ -1,0 +1,17 @@
+@model IEnumerable<Onboard.Web.UI.Models.HRViewModels.CommentsViewModel>
+    
+    <div class="feed-activity-list">
+        @foreach (var comment in Model)
+        {
+            <div class="feed-element" id="comment-@comment.Id">
+                <div class="media-body">
+                    <small class="pull-right">@comment.ElapsedTime</small>
+                    <strong>@comment.Creator</strong> (@comment.Role) wrote
+                    <small class="text-muted">@comment.DateString</small>
+                    <div class="well">
+                        @comment.Comment
+                    </div>
+                </div>
+            </div>
+        }
+    </div>

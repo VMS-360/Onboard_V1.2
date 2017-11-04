@@ -1,0 +1,212 @@
+﻿@model Onboard.Web.UI.Models.HomeViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Onbaord - Home";
+}
+
+<div class="row  border-bottom white-bg dashboard-header">
+    <div class="col-lg-12">
+        <h2>Welcome @Model.FirstName </h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="widget style1 red-bg">
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <i class="fa fa-ban fa-5x"></i>
+                            </div>
+                            <div class="col-xs-8 text-right">
+                                <span> Unassigned Candidates </span>
+                                <h2 class="font-bold">@Model.UnassignedCount</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="widget style1 yellow-bg">
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <i class="fa fa-clock-o fa-5x"></i>
+                            </div>
+                            <div class="col-xs-8 text-right">
+                                <span> Pending Candidates </span>
+                                <h2 class="font-bold">@Model.PendingCount</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="widget style1 lazur-bg">
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <i class="fa fa-envelope-o fa-5x"></i>
+                            </div>
+                            <div class="col-xs-8 text-right">
+                                <span> New messages </span>
+                                <h2 class="font-bold">4</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="widget style1 lazur-bg">
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <i class="fa fa-bell fa-5x"></i>
+                            </div>
+                            <div class="col-xs-8 text-right">
+                                <span> New Notifications </span>
+                                <h2 class="font-bold">2</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>
+                                1 Year Historical Onboards
+                            </h5>
+                            <div ibox-tools></div>
+                        </div>
+                        <div class="ibox-content">
+                            <div>
+                                <canvas id="lineChart" height="60"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="small-chat-box fadeInRight animated">
+
+    <div class="heading" draggable="true">
+        <small class="chat-date pull-right">
+            02.19.2015
+        </small>
+        Small chat
+    </div>
+
+    <div class="content">
+
+        <div class="left">
+            <div class="author-name">
+                Monica Jackson <small class="chat-date">
+                    10:02 am
+                </small>
+            </div>
+            <div class="chat-message active">
+                Lorem Ipsum is simply dummy text input.
+            </div>
+
+        </div>
+        <div class="right">
+            <div class="author-name">
+                Mick Smith
+                <small class="chat-date">
+                    11:24 am
+                </small>
+            </div>
+            <div class="chat-message">
+                Lorem Ipsum is simpl.
+            </div>
+        </div>
+        <div class="left">
+            <div class="author-name">
+                Alice Novak
+                <small class="chat-date">
+                    08:45 pm
+                </small>
+            </div>
+            <div class="chat-message active">
+                Check this stock char.
+            </div>
+        </div>
+        <div class="right">
+            <div class="author-name">
+                Anna Lamson
+                <small class="chat-date">
+                    11:24 am
+                </small>
+            </div>
+            <div class="chat-message">
+                The standard chunk of Lorem Ipsum
+            </div>
+        </div>
+        <div class="left">
+            <div class="author-name">
+                Mick Lane
+                <small class="chat-date">
+                    08:45 pm
+                </small>
+            </div>
+            <div class="chat-message active">
+                I belive that. Lorem Ipsum is simply dummy text.
+            </div>
+        </div>
+
+
+    </div>
+    <div class="form-chat">
+        <div class="input-group input-group-sm">
+            <input type="text" class="form-control"> <span class="input-group-btn">
+                <button class="btn btn-primary" type="button">
+                    Send
+                </button>
+            </span>
+        </div>
+    </div>
+
+</div>
+<div id="small-chat">
+
+    <span class="badge badge-warning pull-right">5</span>
+    <a class="open-small-chat">
+        <i class="fa fa-comments"></i>
+
+    </a>
+</div>
+
+@section Scripts {
+    <environment names="Development">
+        <script src="~/lib/chartJs/Chart.min.js"></script>
+        <script src="~/lib/peity/jquery.peity.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/lib/chartJs/Chart.min.js"></script>
+        <script src="~/lib/peity/jquery.peity.min.js"></script>
+    </environment>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var lineData = {
+                labels: ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", ""],
+                datasets: [
+                    {
+                        label: "Data 1",
+                        backgroundColor: 'rgba(35, 198, 200,0.5)',
+                        borderColor: "rgba(35, 198, 200,0.7)",
+                        pointBackgroundColor: "rgba(35, 198, 200,1)",
+                        pointBorderColor: "#fff",
+                        data: [4, 9, 6, 11, 14, 10, 20, 15, 20, 14, 20, 25, 20, 14]
+                    }
+                ]
+            };
+
+            var lineOptions = {
+                responsive: true
+            };
+
+            var ctx = document.getElementById("lineChart").getContext("2d");
+            new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+        });
+    </script>
+}

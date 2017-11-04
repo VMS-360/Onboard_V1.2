@@ -1,0 +1,269 @@
+@model Onboard.Web.UI.Models.MaintenanceViewModels.UserListViewModel
+@{
+    ViewData["Title"] = "Onbaord - Users";
+}
+<div class="wrapper wrapper-content container-kendo">
+    @Html.Partial("_UserList4")
+</div>
+<div class="modal inmodal fade" id="add-user" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <div class="row">
+                    <div class="col-xs-pull-4">
+                        <i class="fa fa-user-plus fa-5x primary-color"></i>
+                    </div>
+                </div>
+                <h4 class="modal-title">Add User</h4>
+                <small class="font-bold">Complete all required fields to add a new user.</small>
+            </div>
+            <div class="modal-body">
+                <form id="form-add-user" action="#" class="">
+                    <div id="div-add-user">
+                        @Html.Partial("_AddUser", new Onboard.Web.UI.Models.MaintenanceViewModels.OnboardUserViewModel())
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="add-user-save">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Partial("_DeleteUser")
+<div class="modal inmodal fade" id="UserDetails" tabindex="-1" role="dialog" aria-hidden="true">
+</div>
+    @section Scripts {
+        <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+        <script type="text/javascript">
+        function error_handler(e) {
+            if (e.errors) {
+                var message = "Errors:\n";
+                $.each(e.errors, function (key, value) {
+                    if ('errors' in value) {
+                        $.each(value.errors, function () {
+                            message += this + "\n";
+                        });
+                    }
+                });
+                alert(message);
+            }
+            }
+
+            function hide_buttons()
+            {
+                $('a[action="grd-save-user"]').hide();
+                $('a[action="grd-undo"]').hide();
+            }
+
+        $(document).ready(function () {
+            $('#header-strip-addon .input-group-addon').remove();
+            $('#header-strip-addon').append('<span class="input-group-addon"><h4> <span class="label label-primary" id="user-count">'+ @Model.UserCount + ' </span> &nbsp;&nbsp; Users List</h4></span >');
+            $('#header-strip-addon').append('<span class="input-group-addon"><button id= "btn-add-user" class="btn btn-outline btn-primary" type= "button" data-toggle="modal" data-target="#add-user" ><i class="fa fa-user-plus"></i> Add New</button></span >');
+            //$('#header-strip-addon').append('<span class="input-group-addon"><button id="btn-delete-users" class="btn btn-primary" type="button" data-toggle="modal" data-target="#delete-user"><strong>Delete</strong></button></span>');
+            //$('#header-strip-addon').append('<span class="input-group-addon"><button id="btn-save-users" class="btn btn-primary" type="button"><strong>Save</strong></button></span>');
+            //$('#header-strip-addon').append('<span class="input-group-addon"><button id="btn-cancel-users" class="btn btn-primary" type="button"><strong>Cancel</strong></button></span>');
+
+            $('#UserGrid1 th a span').toggleClass('k-i-filter')
+            $('#UserGrid1 th a span').toggleClass('k-i-arrow-60-down')
+        });
+
+        $(document).on('click', '#add-user-save', function () {
+            $("#form-add-user").find(".validation-summary-errors")
+                .addClass("validation-summary-valid")
+                .removeClass("validation-summary-errors");
+
+            var validationInfo = $("#form-add-user").data("unobtrusiveValidation");
+            if (!validationInfo || !validationInfo.validate || validationInfo.validate()) {
+
+                var url = '@Url.Action("AddUser", "Maintenance")';
+                if ($('#UserId').val() != 0)
+                {
+                    url = '@Url.Action("UpdateSelectedUser", "Maintenance")';
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: serializeRowData($("#form-add-user").serialize()),
+                    error: function () {
+                        alert("An error occurred processing the request.");
+                    },
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#UserGrid1').data('kendoGrid').dataSource.read();
+                                //$('#add-user').modal('toggle');
+                                $('#add-user').modal({ backdrop: 'static', keyboard: false })
+                            }
+                            else {
+                                $('#div-add-user').html(result.Html);
+                            }
+                        }
+                    }
+                });
+            }
+        }).on('click', '#btn-add-user', function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("PrepareAddUser", "Maintenance")',
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
+                    }
+                    else {
+                        if (result.Success) {
+                            $('#div-add-user').html(result.Html);
+                        }
+                    }
+                }
+            });
+        }).on('click', '#btn-delete-users', function () {
+            var $items = [];
+            var $deleteusers = [];
+            $('#UserGrid1 tbody tr').each(function () {
+                if ($(this).find('td:first input[type="checkbox"]').is(':checked')) {
+                    $items.push($(this).find('td:nth-child(3)').html());
+                    $deleteusers.push($(this).find('td:nth-child(4)').html());
+                }
+            });
+
+            var str = "";
+            for (var i = 0; i < $deleteusers.length; i++) {
+                str = str + $deleteusers[i] + " ";
+            }
+
+            $('#Model-Delete-User-Names').html(str);
+            str = "";
+            for (var i = 0; i < $items.length; i++) {
+                str = str + $deleteusers[i] + "-";
+            }
+
+            $('#hdn-delete-users').val(str);
+            if (str.length > 0) {
+                $('#Modal-Delete-Accept').modal('toggle');
+            }
+            }).on('click', 'a[action="delete-user"]', function () {
+                var $row = $(this).closest('tr');
+                $('#Model-Delete-User-Names').html($row.find('td:nth-child(4)').html() + " " + $row.find('td:nth-child(5)').html());
+                $('#hdn-delete-users').val($row.find('td:nth-child(3)').html() + "-");
+                $('#Modal-Delete-Accept').modal('toggle');
+                return false;
+            })
+            .on('click', 'a[action="grd-edit-user"]', function () {
+                var grid = $("#UserGrid1").data("kendoGrid");
+                grid.editRow($(this).closest('tr'));
+                //$(this).closest('tr').find('a[action="grd-save-user"]').removeClass('hidden');
+                //$(this).closest('tr').find('a[action="grd-undo"]').removeClass('hidden');
+                $(this).closest('tr').find('td:last').append("<a href='' action='grd-save-user'><i class='fa fa-save fa-lg' title='Save User' style='color: #A4E0BC; padding-left: 10px;'></i></a><a href='' action='grd-undo'><i class='fa fa-undo fa-lg' title='Cancel Changes' style='color: #FFA944; padding-left: 10px;'></i></a>");
+                $(this).hide();
+                return false;
+            })
+            .on('click', 'a[action="grd-save-user"]', function () {
+                var grid = $("#UserGrid1").data("kendoGrid");
+                grid.saveRow($(this).closest('tr'));
+
+                //$(this).closest('tr').find('a[action="grd-edit-user"]').show();
+                //$(this).closest('tr').find('a[action="grd-save-user"]').hide();
+                //$(this).closest('tr').find('a[action="grd-undo"]').hide();
+                return false;
+            })
+            .on('click', 'a[action="grd-undo"]', function () {
+                var grid = $("#UserGrid1").data("kendoGrid");
+                grid.cancelRow($(this).closest('tr'));
+                //$(this).closest('tr').find('a[action="grd-edit-user"]').show();
+                //$(this).closest('tr').find('a[action="grd-save-user"]').hide();
+                //$(this).closest('tr').find('a[action="grd-undo"]').hide();
+                return false;
+            })
+            .on('click', 'button[action="btn-delete-confirm"]', function () {
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("DeleteUsers", "Maintenance")',
+                data: { 'users': $('#hdn-delete-users').val() },
+                error: function () {
+                    alert("An error occurred processing the request.");
+                },
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
+                    }
+                    else {
+                        if (result.Success) {
+                            $('#user-count').html(result.Html);
+                            $('#UserGrid1').data('kendoGrid').dataSource.read();
+                            $('#Modal-Delete-Accept').modal('toggle');
+                        }
+                    }
+                }
+            });
+            }).on('click', 'a[action="edit-user"]', function () {
+                var userId = $(this).attr("user-id");
+                $.ajax({
+                type: "GET",
+                url: '@Url.Action("PrepareUserDetails", "Maintenance")',
+                data: { 'userId': userId },
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
+                    }
+                    else {
+                        if (result.Success) {
+                            $('#UserDetails').html(result.Html);
+                            $('#UserDetails').modal('toggle');
+                        }
+                    }
+                }
+                });
+
+                return false;
+            }).on('click', '#btn-save-users', function () {
+                var grid = $("#UserGrid1").data("kendoGrid");
+                grid.saveChanges();
+
+                return false;
+            }).on('click', '#btn-cancel-users', function () {
+                var grid = $("#UserGrid1").data("kendoGrid");
+                grid.refresh();
+                return false;
+        });
+
+        function serializeRowData(element) {
+            var sdata = element;
+            var $data = element.split("&");
+
+            $.each($data, function (e) {
+                if ($data[e].split("=")[0] === "Internal") {
+                    var internal = $data[e].split("=")[1];
+                    sdata += "&IsInternal=";
+                    if (internal == "I") {
+                        sdata += "true";
+                    }
+                    else {
+                        sdata += "false";
+                    }
+                }
+            });
+
+            return sdata;
+        }
+
+        function rolesFilter(element) {
+            element.kendoDropDownList({
+                dataSource: {
+                    transport: {
+                        read: "Maintenance/GetRoles"
+                    }
+                }
+            });
+        }
+        </script>
+    }
+

@@ -1,0 +1,66 @@
+@model Onboard.Web.UI.Models.HRViewModels.ChecklistViewModel
+<li data-helper="@Model.Helper" data-type="@Model.CommentType">
+    <div class="row">
+        @if (Model.IsChecked)
+            {
+            <div class="col-md-7">
+                @if (Model.CommentType == "Text" || Model.CommentType == "Date")
+                {
+                    <a href="#" class="check-link" pk-id="@Model.Id" clickable="no"><i class="fa fa-check-square"></i> </a>
+                }
+                else
+                {
+                    <a href="#" class="check-link" pk-id="@Model.Id" clickable="yes"><i class="fa fa-check-square"></i> </a>
+                }
+
+                <span class="m-l-xs todo-completed">@Model.Text</span>
+            </div>
+            <div class="col-md-5">
+                @if (Model.CommentType == "Text")
+                {
+                    @Html.TextBoxFor(model => model.CommentValue, new { @class = "form-control checklist-text" })
+                }
+                else if (Model.CommentType == "Date")
+                {
+                    @Html.TextBoxFor(model => model.CommentValue, new { @class = "form-control checklist-text", @type = "Date" })
+                    @*@(Html.Kendo().DatePicker()
+                                      .Name("CommentValue")
+                                      .Value(@Model.CommentValue)
+                                      .HtmlAttributes(new { @class = "form-control checklist-text" })
+                    )*@
+                }
+            </div>
+        }
+        else
+        {
+            <div class="col-md-7">
+                @if (Model.CommentType == "Text" || Model.CommentType == "Date")
+                {
+                    <a href="#" class="check-link" pk-id="@Model.Id" clickable="no"><i class="fa fa-square-o"></i> </a>
+                }
+                else
+                {
+                    <a href="#" class="check-link" pk-id="@Model.Id"  clickable="yes"><i class="fa fa-square-o"></i> </a>
+                }
+                
+                <span class="m-l-xs">@Model.Text</span>
+            </div>
+            <div class="col-md-5">
+                @if (Model.CommentType == "Text")
+                {
+                    @Html.TextBoxFor(model => model.CommentValue, new { @class = "form-control checklist-text" })
+                }
+                else if (Model.CommentType == "Date")
+                {
+                    @Html.TextBoxFor(model => model.CommentValue, new { @class = "form-control checklist-text", @type = "Date" })
+                    @*@(Html.Kendo().DatePicker()
+                                      .Name("CommentValue")
+                                      .Value(@Model.CommentValue)
+                                      .HtmlAttributes(new { @class = "form-control checklist-text" })
+                    )*@
+                }
+            </div>
+
+        }
+    </div>
+</li>

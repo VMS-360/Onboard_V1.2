@@ -1,0 +1,8 @@
+@model IEnumerable<SelectListItem>
+<div class="form-group">
+    <label>End Client *</label> 
+    <button class="btn btn-success btn-circle" type="button" data-action="add-end-client">
+        <i class="fa fa-plus"></i>
+    </button>
+    @Html.DropDownList("EndClient", Model, new { @class = "form-control" })
+</div>
