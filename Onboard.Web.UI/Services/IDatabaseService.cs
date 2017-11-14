@@ -13,5 +13,8 @@ namespace Onboard.Web.UI.Services
         VendorsViewModel GetVendorDetails(int vendorId);
         bool AddVendor(int productOwnerId, VendorsViewModel vendor);
         bool AddClientContact(ClientContactViewModel contact);
+        IList<EndClientsViewModel> GetEndClients(int productOwnerId);
+        EndClientsViewModel GetEndClientDetails(int ClientId);
+        bool AddEndClient(int productOwnerId, EndClientsViewModel client);
     }
 }

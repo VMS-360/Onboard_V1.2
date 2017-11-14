@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,6 +37,14 @@ namespace Onboard.Web.UI.Models.HRViewModels
         public int PercentComplete { get; set; }
 
         public string VendorName { get; set; }
+
+        public string ConsultantName
+        {
+            get
+            {
+                return string.Format("{0} {1}", this.FirstName, this.LastName);
+            }
+        }
 
         public string CandidateName
         {
@@ -167,5 +176,24 @@ namespace Onboard.Web.UI.Models.HRViewModels
         public string VendorChecklistString { get; internal set; }
         public int ClientId { get; internal set; }
         public string ClientChecklistString { get; internal set; }
+        public string Email { get; internal set; }
+        public DateTime EndDate { get; internal set; }
+        public DateTime StartDate { get; internal set; }
+
+        public string StartDateString
+        {
+            get
+            {
+                return this.StartDate.ToString("MM/dd/yyyy", CultureInfo.CreateSpecificCulture("en-US"));
+            }
+        }
+
+        public string EndDateString
+        {
+            get
+            {
+                return this.EndDate.ToString("MM/dd/yyyy", CultureInfo.CreateSpecificCulture("en-US"));
+            }
+        }
     }
 }

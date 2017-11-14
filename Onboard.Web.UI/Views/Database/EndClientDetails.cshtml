@@ -1,0 +1,59 @@
+﻿@model Onboard.Web.UI.Models.DatabaseViewModels.EndClientsViewModel
+
+
+@if (Model.EndClientId != 0)
+{
+<div class="wrapper wrapper-content animated fadeInUp">
+    <div class="ibox">
+        <div class="ibox-content">
+            <h2>@Model.CompanyName</h2>
+            <table class="table table-hover">
+                <tbody>
+                    <tr>
+                        <td class="project-title">
+                            Address:
+                        </td>
+                        <td class="project-title">
+                            @Model.AddressLine1
+                            <br />
+                            @Model.City, @Model.State @Model.Zip
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="project-title">
+                            Tax Id:
+                        </td>
+                        <td class="project-title">
+                            @Model.TaxId
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="project-title">
+                            Contacts:
+                        </td>
+                        <td class="project-title">
+                            @Model.ContactsCount
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="project-title">
+                            Contacts:
+                        </td>
+                        <td class="project-title">
+                            @Model.ConsultantsCount
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="project-title">
+                            Contacts:
+                        </td>
+                        <td class="project-title">
+                            @Model.EndClientsCount
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+}

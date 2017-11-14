@@ -1,0 +1,62 @@
+﻿@model Onboard.Web.UI.Models.HRViewModels.CandidateViewModel
+
+@if (Model.EnrollmentId != 0)
+{
+
+    <div class="wrapper wrapper-content animated fadeInUp">
+        <div class="ibox">
+            <div class="ibox-content">
+                <h2>@Model.ConsultantName</h2>
+                <table class="table table-hover">
+                    <tbody>
+                        <tr>
+                            <td class="project-title">
+                                Client:
+                            </td>
+                            <td class="project-title">
+                                @Model.ClientName
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="project-title">
+                                Vendor:
+                            </td>
+                            <td class="project-title">
+                                @Model.CandidateVendor
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="project-title">
+                                Email:
+                            </td>
+                            <td class="project-title">
+                                @Model.Email
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="project-title">
+                                StartDate:
+                            </td>
+                            <td class="project-title">
+                                @Model.StartDateString
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="project-title">
+                                EndDate:
+                            </td>
+                            <td class="project-title">
+                                @Model.EndDateString
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                 </div>
+            </div>
+        </div>
+
+}

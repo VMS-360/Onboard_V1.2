@@ -1,6 +1,7 @@
 ﻿using Onboard.Entities;
 using Onboard.Web.UI.DataContexts;
 using Onboard.Web.UI.Models.HRViewModels;
+using Onboard.Web.UI.Models.DatabaseViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,11 +100,11 @@ namespace Onboard.Web.UI.Services
                 VendorName = r.VendorName == null ? "" : r.VendorName,
                 AssignedTo = r.AssignedTo == null ? "" : r.AssignedTo.ToString(),
                 AccountManager = r.AccountManager == null ? "" : r.AccountManager.ToString(),
-                ClientId = r.ClientId == null ? 0 : (int) r.ClientId,
+                ClientId = r.ClientId == null ? 0 : (int)r.ClientId,
                 VendorId = r.VendorId == null ? 0 : (int)r.VendorId
             }).ToList();
 
-            foreach(CandidateViewModel theModel in returnList)
+            foreach (CandidateViewModel theModel in returnList)
             {
                 theModel.TotalTasks = this._context.Checklist.Where(r => r.EnrollmentId == theModel.EnrollmentId).Count();
                 theModel.RemainingTasks = this._context.Checklist.Where(r => r.EnrollmentId == theModel.EnrollmentId && r.IndCompleted != "Y").Count();
@@ -186,8 +187,8 @@ namespace Onboard.Web.UI.Services
                                       CreatedDate = r.CreatedDate,
                                       VendorName = r.Vendor.CompanyName,
                                       AccountManager = r.ProtfolioManagerId,
-                                      OnboardedIndicator =r.OnboardedIndicator,
-                                       ClientContact = r.ClientContact.Name
+                                      OnboardedIndicator = r.OnboardedIndicator,
+                                      ClientContact = r.ClientContact.Name
                                   }).FirstOrDefault();
 
             return new CandidateDetailsViewModel
@@ -224,7 +225,7 @@ namespace Onboard.Web.UI.Services
                 ProductOwner = owner
             };
 
-            if(!string.IsNullOrEmpty(model.SSN))
+            if (!string.IsNullOrEmpty(model.SSN))
             {
                 candidate.SSN = model.SSN.Replace("-", "");
             }
@@ -257,7 +258,7 @@ namespace Onboard.Web.UI.Services
                 //VendorContactId = Convert.ToInt32(model.VendorContact)
             };
 
-            if(!string.IsNullOrEmpty(model.BillRate) && model.Internal != "Internal")
+            if (!string.IsNullOrEmpty(model.BillRate) && model.Internal != "Internal")
             {
                 enrollment.BillRate = Convert.ToDecimal(model.BillRate);
             }
@@ -274,7 +275,7 @@ namespace Onboard.Web.UI.Services
 
             if (!string.IsNullOrEmpty(model.Vendor) && model.Internal != "Internal")
             {
-              if(model.TaxStatus != "W2" && model.TaxStatus != "1099")
+                if (model.TaxStatus != "W2" && model.TaxStatus != "1099")
                 {
                     enrollment.VendorId = Convert.ToInt32(model.Vendor);
                 }
@@ -291,8 +292,9 @@ namespace Onboard.Web.UI.Services
 
             this._context.Enrollment.Add(enrollment);
 
-            EnrollmentActivity activity = new EnrollmentActivity() {
-                Action ="Candidate Created",
+            EnrollmentActivity activity = new EnrollmentActivity()
+            {
+                Action = "Candidate Created",
                 Enrollment = enrollment
             };
 
@@ -334,7 +336,7 @@ namespace Onboard.Web.UI.Services
 
                 int vendorCount = this._context.Vendor_Checklist.Where(r => r.VendorId == enrollment.VendorId).Count();
 
-                if(vendorCount == 0)
+                if (vendorCount == 0)
                 {
                     var vendorLookup = this._context.Ref_Checklist.Where(r => r.EmploymentType == "V").Select(r => new { r.Text, r.CommentType, r.IsActive });
                     foreach (var taskItem in vendorLookup)
@@ -386,6 +388,134 @@ namespace Onboard.Web.UI.Services
             }
 
             this._context.SaveChanges();
+        }
+
+        public IList<CandidateViewModel> GetAllOnboardedCandidates(int productOwnerId, int enrollmentId)
+        {
+            var enrollments = this._context
+                                  .Enrollment
+                                  .Where(r => r.Candidate.ProductOwnerId == productOwnerId &&
+                                  (enrollmentId == 0 || r.EnrollmentId == enrollmentId) &&
+                                              r.OnboardedIndicator == "Y")
+                                  .Select(r => new
+                                  {
+                                      EnrollmentId = r.EnrollmentId,
+                                      CandidateId = r.Candidate.CandidateId,
+                                      FirstName = r.Candidate.FirstName,
+                                      LastName = r.Candidate.LastName,
+                                      ClientName = r.Client.CompanyName,
+                                      BillingType = r.TaxStatusCode,
+                                      CreatedDate = r.CreatedDate,
+                                      ModifiedDate = r.ModifiedDate,
+                                      ModifiedBy = r.ModifiedUser,
+                                      PercentComplete = 83,
+                                      VendorName = r.Vendor.CompanyName,
+                                      AssignedTo = r.HRUserId,
+                                      AccountManager = r.ProtfolioManagerId,
+                                      Email = r.Candidate.Email,
+                                      StartDate = r.StartDate,
+                                      EndDate = r.EndDate
+                                      //TaxStatus = r.TaxStatus,
+                                      //ClientContact = r.ClientContact
+                                  }).ToList();
+
+            List<CandidateViewModel> returnList = enrollments.Select(r => new CandidateViewModel
+            {
+                EnrollmentId = r.EnrollmentId,
+                CandidateId = r.CandidateId,
+                FirstName = r.FirstName,
+                LastName = r.LastName,
+                ClientName = r.ClientName == null ? "" : r.ClientName,
+                BillingType = r.BillingType,
+                CreatedDate = r.CreatedDate == null ? new DateTime() : (DateTime)r.CreatedDate,
+                ModifiedDate = r.ModifiedDate == null ? new DateTime() : (DateTime)r.ModifiedDate,
+                ModifiedBy = r.ModifiedBy,
+                PercentComplete = 83,
+                VendorName = r.VendorName == null ? "" : r.VendorName,
+                AssignedTo = r.AssignedTo == null ? "" : r.AssignedTo.ToString(),
+                AccountManager = r.AccountManager == null ? "" : r.AccountManager.ToString(),
+                Email = r.Email,
+                StartDate = r.StartDate == null ? new DateTime() : (DateTime)r.StartDate,
+                EndDate = r.EndDate == null ? new DateTime() : (DateTime)r.EndDate
+                //TaxStatus = r.TaxStatus == null ? "" : r.TaxStatus,
+                //ClientContact = r.ClientContact == null ? "" : r.ClientContact
+
+            }).ToList();
+
+            foreach (CandidateViewModel theModel in returnList)
+            {
+                theModel.TotalTasks = this._context.Checklist.Where(r => r.EnrollmentId == theModel.EnrollmentId).Count();
+                theModel.RemainingTasks = this._context.Checklist.Where(r => r.EnrollmentId == theModel.EnrollmentId && r.IndCompleted != "Y").Count();
+                theModel.TotalTasks += this._context.Client_Checklist.Where(r => r.EnrollmentId == theModel.EnrollmentId).Count();
+                theModel.RemainingTasks += this._context.Client_Checklist.Where(r => r.EnrollmentId == theModel.EnrollmentId && r.IndCompleted != "Y").Count();
+                if (theModel.VendorId != 0)
+                {
+                    theModel.TotalTasks += this._context.Vendor_Checklist.Where(r => r.VendorId == theModel.VendorId).Count();
+                    theModel.RemainingTasks += this._context.Vendor_Checklist.Where(r => r.VendorId == theModel.VendorId && r.IndCompleted != "Y").Count();
+                }
+
+                if (theModel.TotalTasks != 0)
+                {
+                    theModel.PercentComplete = Convert.ToInt32(Math.Round((double)((decimal)(theModel.TotalTasks - theModel.RemainingTasks) / theModel.TotalTasks) * 100, 0));
+                }
+                else
+                {
+                    theModel.PercentComplete = 0;
+                }
+            }
+
+            return returnList;
+        }
+
+        public CandidateViewModel GetConsultantDetails(int enrollmentId)
+        {
+            var enrollments = this._context
+                                  .Enrollment
+                                  .Where(r => r.EnrollmentId == enrollmentId &&
+                                              r.OnboardedIndicator == "Y")
+                                  .Select(r => new
+                                  {
+                                      EnrollmentId = r.EnrollmentId,
+                                      CandidateId = r.Candidate.CandidateId,
+                                      FirstName = r.Candidate.FirstName,
+                                      LastName = r.Candidate.LastName,
+                                      ClientName = r.Client.CompanyName,
+                                      BillingType = r.TaxStatusCode,
+                                      CreatedDate = r.CreatedDate,
+                                      ModifiedDate = r.ModifiedDate,
+                                      ModifiedBy = r.ModifiedUser,
+                                      PercentComplete = 83,
+                                      VendorName = r.Vendor.CompanyName,
+                                      AssignedTo = r.HRUserId,
+                                      AccountManager = r.ProtfolioManagerId,
+                                      Email = r.Candidate.Email,
+                                      StartDate = r.StartDate,
+                                      EndDate = r.EndDate
+                                      //TaxStatus = r.TaxStatus,
+                                      //ClientContact = r.ClientContact
+                                  }).FirstOrDefault();
+
+            return new CandidateViewModel
+            {
+                EnrollmentId = enrollments.EnrollmentId,
+                CandidateId = enrollments.CandidateId,
+                FirstName = enrollments.FirstName,
+                LastName = enrollments.LastName,
+                ClientName = enrollments.ClientName == null ? "" : enrollments.ClientName,
+                BillingType = enrollments.BillingType,
+                CreatedDate = enrollments.CreatedDate == null ? new DateTime() : (DateTime)enrollments.CreatedDate,
+                ModifiedDate = enrollments.ModifiedDate == null ? new DateTime() : (DateTime)enrollments.ModifiedDate,
+                ModifiedBy = enrollments.ModifiedBy,
+                PercentComplete = 83,
+                VendorName = enrollments.VendorName == null ? "" : enrollments.VendorName,
+                AssignedTo = enrollments.AssignedTo == null ? "" : enrollments.AssignedTo.ToString(),
+                AccountManager = enrollments.AccountManager == null ? "" : enrollments.AccountManager.ToString(),
+                Email = enrollments.Email,
+                StartDate = enrollments.StartDate == null ? new DateTime() : (DateTime)enrollments.StartDate,
+                EndDate = enrollments.EndDate == null ? new DateTime() : (DateTime)enrollments.EndDate
+                //TaxStatus = r.TaxStatus == null ? "" : r.TaxStatus,
+                //ClientContact = r.ClientContact == null ? "" : r.ClientContact
+            };
         }
 
         public void OnboardEnrollment(int enrollmentId, int hrUserId, string currentUser)

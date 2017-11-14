@@ -1,7 +1,213 @@
-
+@model IEnumerable<Onboard.Web.UI.Models.DatabaseViewModels.EndClientsViewModel>
 @{
-    ViewData["Title"] = "EndClients";
+    ViewData["Title"] = "Onbaord - End Clients";
 }
+<style>
+    .row-select {
+        background-color: #5a8dc2;
+    }
+</style>
 
-<h2>EndClients</h2>
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-sm-8">
+        <h2>End Clients</h2>
+        <ol class="breadcrumb">
+            <li>
+                Database
+            </li>
+            <li class="active">
+                <strong>End Clients</strong>
+            </li>
+        </ol>
+    </div>
 
+    <div class="col-sm-4">
+        <dl class="breadcrumb-padding pull-right">
+            <a href="#" class="btn btn-white btn-sm" action="add-endclient"><i class="fa fa-plus"></i> Add End Client </a>
+        </dl>
+    </div>
+ </div>
+
+<div class="row">
+    <div class="col-lg-8">
+         <div class="wrapper wrapper-content animated fadeInUp">
+             <div class="ibox">
+                 <div class="ibox-content">
+                     <div class="m-b-md col-lg-9">
+                         <h2>End Clients</h2>
+                     </div>
+                     <div class="col-lg-3">
+                         <dl class="dl-horizontal pull-right">
+                             <span id="client-count">@Model.Count()</span>
+                             End Clients
+                         </dl>
+                      </div>
+                     <div class="row m-b-sm m-t-sm">
+                         <div class="col-md-6">
+                             <div class="input-group">
+                                 <input type="text" placeholder="Search" class="input-sm form-control"> <span class="input-group-btn">
+                                     <button type="button" class="btn btn-sm btn-primary" action="search-endclient"> Go!</button>
+                                 </span>
+                             </div>
+                      </div>
+                   </div>
+
+                     <div id="clients-list">
+                         @Html.Partial("EndClientList", Model)
+                     </div>
+                  </div>
+             </div>
+          </div>
+     </div>
+
+    <div class="col-lg-4">
+        <div id="endclient-details">
+            @Html.Partial("EndClientDetails", new Onboard.Web.UI.Models.DatabaseViewModels.EndClientsViewModel())
+        </div>
+    </div>
+ </div>
+
+<div class="modal inmodal fade" id="add-endclient-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <div class="row">
+                    <div class="col-xs-pull-4">
+                        <i class="fa fa-user-plus fa-5x primary-color"></i>
+                    </div>
+                </div>
+                <h4 class="modal-title">Add End client</h4>
+                <small class="font-bold">Complete all required fields to add a new end client.</small>
+            </div>
+            <div class="modal-body">
+                <form id="form-add-endclient" action="#" class="">
+                    <div id="div-add-endclient">
+                        @Html.Partial("AddEndClient", new Onboard.Web.UI.Models.DatabaseViewModels.EndClientsViewModel())
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="add-endclient-save">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+<script>
+            $(document).ready(function () {
+
+            }).on('click', 'button[action="search-endclient"]', function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("EndClientSearch", "Database")',
+                    data: { 'searchString': $('input[placeholder="Search"]').val() },
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#endclients-list').html(result.Html);
+                            }
+                        }
+                    }
+                });
+                }).on('click', 'a[action="view-endclient"]', function () {
+                    return false;
+                @*var endclientId = $(this).closest('tr').attr("pk-id");
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("EndClientDetails", "Database")',
+                    data: { 'endclientId': endclientId },
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#endclient-details').html(result.Html);
+                            }
+                        }
+                    }
+                });*@
+            }).on('click', 'a[action="add-endclient"]', function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("PrepareAddEndClient", "Database")',
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#div-add-endclient').html(result.Html);
+                                $('#add-endclient-modal').modal({ backdrop: 'static', keyboard: false });
+                            }
+                        }
+                    }
+                });
+            }).on('click', '#add-endclient-save', function () {
+                $("#form-add-endclient").find(".validation-summary-errors")
+                    .addClass("validation-summary-valid")
+                    .removeClass("validation-summary-errors");
+
+                var validationInfo = $("#form-add-endclient").data("unobtrusiveValidation");
+                if (!validationInfo || !validationInfo.validate || validationInfo.validate()) {
+
+                    var url = '@Url.Action("AddEndClient", "Database")';
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $("#form-add-endclient").serialize(),
+                        error: function () {
+                            alert("An error occurred processing the request.");
+                        },
+                        success: function (result, textStatus, xhr) {
+                            if (xhr.status === 302) {
+                                alert("Your session has expired.  Please log in.");
+                            }
+                            else {
+                                if (result.Success) {
+                                    $('#endclients-list').html(result.Html);
+                                    $('#endclient-count').html(result.Count);
+                                    $('#add-endclient-modal').modal('toggle');
+                                }
+                                else {
+                                    $('#div-add-endclient').html(result.Html);
+                                }
+                            }
+                        }
+                    });
+                }
+                }).on('click', '#EndClient-Lists td', function () {
+                    $("#EndClient-Lists td").removeClass("row-select");
+                    $(this).closest('tr').find('td').addClass("row-select");
+
+                    var endclientId = $(this).closest('tr').attr("pk-id");
+                    $.ajax({
+                        type: "GET",
+                        url: '@Url.Action("EndClientDetails", "Database")',
+                        data: { 'endclientId': endclientId },
+                        success: function (result, textStatus, xhr) {
+                            if (xhr.status === 302) {
+                                alert("Your session has expired.  Please log in.");
+                            }
+                            else {
+                                if (result.Success) {
+                                    $('#endclient-details').html(result.Html);
+                                }
+                            }
+                        }
+                    });
+                });
+
+            $(document).ready(function () {
+                $('#EndClient-Lists td').css('cursor', 'pointer');
+            });
+</script>
+
+    }
