@@ -454,6 +454,51 @@ namespace Onboard.Web.UI.Controllers
             }
         }
 
+        public IActionResult PrepareAddEndClient(int clientId)
+        {
+            return this.Json(
+                            new
+                            {
+                                Success = true,
+                                Message = string.Empty,
+                                Html = this.RenderPartialViewToString("_AddEndClient", new EndClientsViewModel())
+                            });
+        }
+
+        [HttpPost]
+        public IActionResult AddEndClient(EndClientsViewModel client)
+        {
+            if (client != null && ModelState.IsValid)
+            {
+                var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
+                client.CurrentUser = loggedUser.UserName;
+                bool success = this._databaseService.AddEndClient(loggedUser.ProductOwnerId, client);
+
+                if (!success)
+                {
+                    ModelState.AddModelError("CompanyName", "Client Name already exists.");
+                    return this.GetClientViewResult(client);
+                }
+                else
+                {
+                    IList<EndClientsViewModel> model = this._databaseService.GetEndClients(loggedUser.ProductOwnerId);
+                    List<SelectListItem> endClients = this._lookupService.GetEndClients(loggedUser.ProductOwnerId);
+                    return this.Json(
+                                    new
+                                    {
+                                        Success = true,
+                                        Message = "Saved Successfully",
+                                        Html = this.RenderPartialViewToString("_CandiateEndClient", endClients),
+                                        Count = model.Count
+                                    });
+                }
+            }
+            else
+            {
+                return this.GetClientViewResult(client);
+            }
+        }
+
         public IActionResult PrepareAddClientContact(int clientId)
         {
             ClientContactViewModel viewModel = new ClientContactViewModel();
@@ -642,6 +687,19 @@ namespace Onboard.Web.UI.Controllers
                                 Success = false,
                                 Message = "Validation failed",
                                 Html = this.RenderPartialViewToString("_AddVendor", vendor)
+                            });
+        }
+
+        private JsonResult GetClientViewResult(EndClientsViewModel client)
+        {
+            //user = this.AppendModelCombos(user);
+
+            return this.Json(
+                            new
+                            {
+                                Success = false,
+                                Message = "Validation failed",
+                                Html = this.RenderPartialViewToString("EnClient", client)
                             });
         }
     }

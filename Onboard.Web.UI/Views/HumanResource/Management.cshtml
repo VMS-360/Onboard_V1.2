@@ -83,6 +83,8 @@
 </div>
 <div class="modal inmodal fade" id="AddClientContact" tabindex="-1" role="dialog" aria-hidden="true">
 </div>
+<div class="modal inmodal fade" id="AddEndClient" tabindex="-1" role="dialog" aria-hidden="true">
+</div>
 @Html.Partial("_Accept")
 <div class="modal inmodal" id="model-assign" tabindex="-1" role="dialog" aria-hidden="true">
 </div>
@@ -437,7 +439,59 @@
                         }
                     });
                 }
-            }).on('click', 'button[data-action="add-vendor"]', function () {
+            }).on('click', 'button[data-action="add-end-client"]', function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("PrepareAddEndClient", "HumanResource")',
+                    data: { 'clientId': $('#Client').val() },
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#AddEndClient').html(result.Html);
+                                $('#AddEndClient').modal({ backdrop: 'static', keyboard: false });
+                            }
+                        }
+                    }
+                });
+
+                return false;
+            }).on('click', 'button[action="add-end-client-save"]', function () {
+                $("#form-add-endclient").find(".validation-summary-errors")
+                    .addClass("validation-summary-valid")
+                    .removeClass("validation-summary-errors");
+
+                var validationInfo = $("#form-add-endclient").data("unobtrusiveValidation");
+                if (!validationInfo || !validationInfo.validate || validationInfo.validate()) {
+
+                    var url = '@Url.Action("AddEndClient", "HumanResource")';
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $("#form-add-endclient").serialize(),
+                        error: function () {
+                            alert("An error occurred processing the request.");
+                        },
+                        success: function (result, textStatus, xhr) {
+                            if (xhr.status === 302) {
+                                alert("Your session has expired.  Please log in.");
+                            }
+                            else {
+                                if (result.Success) {
+                                    $('#div-end-client').html(result.Html);
+                                    $('#AddEndClient').modal('toggle');
+                                }
+                                else {
+                                    $('#div-add-endclient').html(result.Html);
+                                }
+                            }
+                        }
+                    });
+                }
+               }).on('click', 'button[data-action="add-vendor"]', function () {
                 $.ajax({
                     type: "GET",
                     url: '@Url.Action("PrepareAddVendor", "Database")',

@@ -162,7 +162,7 @@ namespace Onboard.Web.UI.Services
             if (count == 0)
             {
                 success = true;
-                string phone = contact.Phone;
+                string phone = contact.CandiatePhone;
                 if (!string.IsNullOrEmpty(phone))
                 {
                     phone = phone.Replace("(", "");

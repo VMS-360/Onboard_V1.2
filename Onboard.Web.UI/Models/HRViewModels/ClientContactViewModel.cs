@@ -21,7 +21,7 @@ namespace Onboard.Web.UI.Models.HRViewModels
         public string Email { get; set; }
 
         [DataType(DataType.Text)]
-        public string Phone { get; set; }
+        public string CandiatePhone { get; set; }
 
         public string CurrentUser { get; set; }
     }
