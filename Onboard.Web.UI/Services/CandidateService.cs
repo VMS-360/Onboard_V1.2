@@ -347,7 +347,7 @@ namespace Onboard.Web.UI.Services
                             IndCompleted = "N",
                             IsActive = taskItem.IsActive,
                             CommentType = taskItem.CommentType,
-                            VendorId = (int)enrollment.VendorId
+                            VendorId = Convert.ToInt32(model.Vendor)
                         };
 
                         this._context.Vendor_Checklist.Add(item);
@@ -529,6 +529,17 @@ namespace Onboard.Web.UI.Services
             }
 
             this._context.SaveChanges();
+        }
+
+        public IList<DateTime?> GetOnboardDates(int productOwnerId)
+        {
+            return this._context
+                        .Enrollment
+                        .Where(r => r.Candidate.ProductOwnerId == productOwnerId &&
+                                    !string.IsNullOrEmpty(r.OnboardedIndicator) &&
+                                    r.OnboardedIndicator == "Y")
+                        .Select(r => r.OnboardedDate).ToList();
+
         }
     }
 }

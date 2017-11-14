@@ -187,26 +187,41 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            var lineData = {
-                labels: ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", ""],
-                datasets: [
-                    {
-                        label: "Data 1",
-                        backgroundColor: 'rgba(35, 198, 200,0.5)',
-                        borderColor: "rgba(35, 198, 200,0.7)",
-                        pointBackgroundColor: "rgba(35, 198, 200,1)",
-                        pointBorderColor: "#fff",
-                        data: [4, 9, 6, 11, 14, 10, 20, 15, 20, 14, 20, 25, 20, 14]
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("PrepareGraph", "Home")',
+                data: { 'enrollmentId': 0 },
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
                     }
-                ]
-            };
+                    else {
+                        if (result.Success) {
 
-            var lineOptions = {
-                responsive: true
-            };
+                            var lineData = {
+                                labels: result.Years,
+                                datasets: [
+                                    {
+                                        label: "Onboarded Candidates",
+                                        backgroundColor: 'rgba(35, 198, 200,0.5)',
+                                        borderColor: "rgba(35, 198, 200,0.7)",
+                                        pointBackgroundColor: "rgba(35, 198, 200,1)",
+                                        pointBorderColor: "#fff",
+                                        data: result.Candidates
+                                    }
+                                ]
+                            };
 
-            var ctx = document.getElementById("lineChart").getContext("2d");
-            new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+                            var lineOptions = {
+                                responsive: true
+                            };
+
+                            var ctx = document.getElementById("lineChart").getContext("2d");
+                            new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+                        }
+                    }
+                }
+            });
         });
     </script>
 }

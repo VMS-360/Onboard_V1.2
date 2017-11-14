@@ -90,6 +90,7 @@ namespace Onboard.Web.UI.Models.HRViewModels
         public List<SelectListItem> TaxStatuses { get; set; }
         public List<SelectListItem> Vendors { get; set; }
         public List<SelectListItem> VisaTypes { get; set; }
+        public List<SelectListItem> States { get; set; }
         public string EmploymentTypeCode { get; internal set; }
         public char Gender { get; internal set; }
     }

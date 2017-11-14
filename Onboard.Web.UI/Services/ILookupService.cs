@@ -13,5 +13,6 @@ namespace Onboard.Web.UI.Services
         List<SelectListItem> GetTaxStatuses();
         List<SelectListItem> GetVendors(int productOwnerId);
         List<SelectListItem> GetVisaTypes();
+        List<SelectListItem> GetStates();
     }
 }

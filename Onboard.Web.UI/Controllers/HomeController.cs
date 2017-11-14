@@ -59,5 +59,47 @@ namespace Onboard.Web.UI.Controllers
         {
             return View();
         }
+
+        public ActionResult PrepareGraph()
+        {
+            List<string> years = new List<string>();
+            for (int i = 0; i < 12; i++)
+            {
+                years.Add(this.ExtractDateString(DateTime.Now.AddMonths(i * -1)));
+            }
+
+            IList<DateTime?> onboardedDates = new List<DateTime?>();
+
+            var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
+            onboardedDates = this._candidateService.GetOnboardDates(loggedUser.ProductOwnerId);
+
+            List<int> candidates = new List<int>();
+
+            for (int i = 0; i < 12; i++)
+            {
+                DateTime graphDay = DateTime.Now.AddMonths(i * -1);
+
+                DateTime firstDayOfMonth = new DateTime(graphDay.Year, graphDay.Month, 1);
+                DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+                candidates.Add(onboardedDates.Where(r => r >= firstDayOfMonth && r <= lastDayOfMonth).Count());
+            }
+
+            years.Reverse();
+            candidates.Reverse();
+
+            return this.Json(
+               new
+               {
+                   Success = true,
+                   Years = years.ToArray(),
+                   Candidates = candidates.ToArray()
+               });
+        }
+
+        private string ExtractDateString(DateTime date)
+        {
+            return date.ToString("MMM yy");
+        }
     }
 }

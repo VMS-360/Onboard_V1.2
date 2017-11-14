@@ -275,6 +275,7 @@ namespace Onboard.Web.UI.Controllers
             model.Vendors = this._lookupService.GetVendors(loggedUser.ProductOwnerId);
             model.VisaTypes = this._lookupService.GetVisaTypes();
             model.Clients = this._lookupService.GetClients(loggedUser.ProductOwnerId);
+            model.States = this._lookupService.GetStates();
             if (!string.IsNullOrEmpty(model.Client))
             {
                 model.ClientContacts = this._lookupService.GetClientContacts(Convert.ToInt32(model.Client));
@@ -328,6 +329,7 @@ namespace Onboard.Web.UI.Controllers
             model.Vendors = this._lookupService.GetVendors(loggedUser.ProductOwnerId);
             model.VisaTypes = this._lookupService.GetVisaTypes();
             model.Clients = this._lookupService.GetClients(loggedUser.ProductOwnerId);
+            model.States = this._lookupService.GetStates();
             if (!string.IsNullOrEmpty(model.Client))
             {
                 model.ClientContacts = this._lookupService.GetClientContacts(Convert.ToInt32(model.Client));

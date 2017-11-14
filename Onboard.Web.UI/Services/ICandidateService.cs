@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using Onboard.Web.UI.Models.HRViewModels;
+﻿using Onboard.Web.UI.Models.HRViewModels;
+using System;
+using System.Collections.Generic;
 
 namespace Onboard.Web.UI.Services
 {
@@ -14,5 +15,6 @@ namespace Onboard.Web.UI.Services
         void OnboardEnrollment(int enrollmentId, int hrUserId, string currentUser);
         IList<CandidateViewModel> GetAllOnboardedCandidates(int productOwnerId, int enrollmentId);
         CandidateViewModel GetConsultantDetails(int enrollmentId);
+        IList<DateTime?> GetOnboardDates(int productOwnerId);
     }
 }

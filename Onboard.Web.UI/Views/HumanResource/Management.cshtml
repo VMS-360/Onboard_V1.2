@@ -36,7 +36,14 @@
                 <li>
                     <a data-toggle="tab" href="#tab-unassigned">
                         Unassigned Candidates
-                        <span class="label label-danger" id="pending-count">@Model.PendingCandidates.Count</span>
+                        @if (Model.PendingCandidates.Count > 0)
+                        {
+                            <span class="label label-danger" id="pending-count">@Model.PendingCandidates.Count</span>
+                        }
+                        else
+                        {
+                            <span class="label label-primary" id="pending-count">@Model.PendingCandidates.Count</span>
+                        }
                     </a>
                 </li>
                 @if (SignInManager.IsSignedIn(User))
@@ -202,6 +209,18 @@
                                     //Update my grid too.
                                     $('#divMyAssigned').html(result.MyHtml);
                                     $('#my-count').html(result.MyCount);
+
+                                    if (result.Count > 0)
+                                    {
+                                        $('#pending-count').removeClass('label-primary');
+                                        $('#pending-count').addClass('label-danger');
+                                    }
+                                    else 
+                                    {
+                                        $('#pending-count').removeClass('label-danger');
+                                        $('#pending-count').addClass('label-primary');
+                                    }
+
                                     $('#model-assign').modal('toggle');
                                 }
                                 else {
@@ -232,6 +251,14 @@
                             if (result.Success) {
                                 $('#divUnassigned').html(result.Html);
                                 $('#pending-count').html(result.Count);
+                                if (result.Count > 0) {
+                                    $('#pending-count').removeClass('label-primary');
+                                    $('#pending-count').addClass('label-danger');
+                                }
+                                else {
+                                    $('#pending-count').removeClass('label-danger');
+                                    $('#pending-count').addClass('label-primary');
+                                }
                                 //Update my grid too.
                                 $('#divMyAssigned').html(result.MyHtml);
                                 $('#my-count').html(result.MyCount);
@@ -351,6 +378,14 @@
                                                     if (result.Success) {
                                                         $('#divUnassigned').html(result.Html);
                                                         $('#pending-count').html(result.Count);
+                                                        if (result.Count > 0) {
+                                                            $('#pending-count').removeClass('label-primary');
+                                                            $('#pending-count').addClass('label-danger');
+                                                        }
+                                                        else {
+                                                            $('#pending-count').removeClass('label-danger');
+                                                            $('#pending-count').addClass('label-primary');
+                                                        }
                                                         $('#AddCandidate').modal('toggle');
 
                                                     }
