@@ -33,6 +33,24 @@
     <div class="col-lg-12">
         <div class="tabs-container">
             <ul class="nav nav-tabs">
+                @if (Model.ActiveTab == "U")
+                {
+                    <li class="active">
+                        <a data-toggle="tab" href="#tab-unassigned">
+                            Unassigned Candidates
+                            @if (Model.PendingCandidates.Count > 0)
+                            {
+                                <span class="label label-danger" id="pending-count">@Model.PendingCandidates.Count</span>
+                            }
+                            else
+                            {
+                                <span class="label label-primary" id="pending-count">@Model.PendingCandidates.Count</span>
+                            }
+                        </a>
+                    </li>
+                }
+                else
+                {
                 <li>
                     <a data-toggle="tab" href="#tab-unassigned">
                         Unassigned Candidates
@@ -46,16 +64,28 @@
                         }
                     </a>
                 </li>
+                }
                 @if (SignInManager.IsSignedIn(User))
                 {
                     var user = UserManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
-
-                    <li class="active">
-                        <a data-toggle="tab" href="#tab-my-candidates">
-                            @string.Format("{0} {1}'s Candidates", user.FirstName, user.LastName)
-                            <span class="label label-primary" id="my-count">@Model.AssignedCandidates.Count</span>
-                        </a>
-                    </li>
+                    @if (Model.ActiveTab == "P")
+                    {
+                        <li class="active">
+                            <a data-toggle="tab" href="#tab-my-candidates">
+                                @string.Format("{0} {1}'s Candidates", user.FirstName, user.LastName)
+                                <span class="label label-primary" id="my-count">@Model.AssignedCandidates.Count</span>
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            <a data-toggle="tab" href="#tab-my-candidates">
+                                @string.Format("{0} {1}'s Candidates", user.FirstName, user.LastName)
+                                <span class="label label-primary" id="my-count">@Model.AssignedCandidates.Count</span>
+                            </a>
+                        </li>
+                    }
                     <li>
                         <a data-toggle="tab" href="#tab-recent-onboard">
                             @string.Format("{0} {1}'s Recent Onboards", user.FirstName, user.LastName)
@@ -65,16 +95,39 @@
                 }
             </ul>
             <div class="tab-content">
-                <div id="tab-unassigned" class="tab-pane">
-                    <div class="panel-body" id="divUnassigned">
-                        @Html.Partial("_PendingCandidates", Model.PendingCandidates)
+                @if (Model.ActiveTab == "U")
+                {
+                    <div id="tab-unassigned" class="tab-pane active">
+                        <div class="panel-body" id="divUnassigned">
+                            @Html.Partial("_PendingCandidates", Model.PendingCandidates)
+                        </div>
                     </div>
-                </div>
-                <div id="tab-my-candidates" class="tab-pane active">
-                    <div class="panel-body" id="divMyAssigned">
-                        @Html.Partial("_AssignedCandidates", Model.AssignedCandidates)
+                }
+                else
+                {
+                    <div id="tab-unassigned" class="tab-pane">
+                        <div class="panel-body" id="divUnassigned">
+                            @Html.Partial("_PendingCandidates", Model.PendingCandidates)
+                        </div>
                     </div>
-                </div>
+                }
+
+                @if (Model.ActiveTab == "P")
+                {
+                    <div id="tab-my-candidates" class="tab-pane active">
+                        <div class="panel-body" id="divMyAssigned">
+                            @Html.Partial("_AssignedCandidates", Model.AssignedCandidates)
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div id="tab-my-candidates" class="tab-pane">
+                        <div class="panel-body" id="divMyAssigned">
+                            @Html.Partial("_AssignedCandidates", Model.AssignedCandidates)
+                        </div>
+                    </div>
+                }
                 <div id="tab-recent-onboard" class="tab-pane">
                     <div class="panel-body">
                         @Html.Partial("_RecentOnboards", Model.RecentOnboards)

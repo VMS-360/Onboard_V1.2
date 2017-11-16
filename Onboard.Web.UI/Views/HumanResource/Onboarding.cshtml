@@ -58,16 +58,21 @@
 </style>
 
 <div class="row wrapper border-bottom white-bg page-heading">
-    <div class="col-sm-4">
+    <div class="col-sm-8">
         <h2>Candidate Onboarding</h2>
         <ol class="breadcrumb">
             <li>
-                <a href="@Url.Action("Management", "HumanResource")">Management</a>
+                <a href="@Url.Action("Management", "HumanResource")">Human Resources</a>
             </li>
             <li class="active">
                 <strong>Candidate Onboarding</strong>
             </li>
         </ol>
+    </div>
+    <div class="col-sm-4">
+        <dl class="pull-right" style="padding-top:40px;">
+            <button id="btn-abort-candidate" class="btn btn-outline btn-primary" type="button" action="candidate-abort"> Abort Candidate</button>
+        </dl>
     </div>
 </div>
 <div class="row">

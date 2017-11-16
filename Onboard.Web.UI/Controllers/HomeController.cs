@@ -18,7 +18,8 @@ namespace Onboard.Web.UI.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ICompositeViewEngine _viewEngine;
 
-        public HomeController(ICandidateService candidateService, UserManager<ApplicationUser> userManager, ICompositeViewEngine viewEngine) : base(viewEngine)
+        public HomeController(ICandidateService candidateService, UserManager<ApplicationUser> userManager, 
+            ICompositeViewEngine viewEngine) : base(viewEngine)
         {
             this._candidateService = candidateService;
             this._userManager = userManager;
@@ -37,6 +38,9 @@ namespace Onboard.Web.UI.Controllers
 
             model.UnassignedCount = this._candidateService.GetPendingCandidates(loggedUser.ProductOwnerId).Count();
             model.PendingCount = this._candidateService.GetMyCandidates(loggedUser.Id, loggedUser.ProductOwnerId).Count();
+
+            model.UsassignedCliclable = model.UnassignedCount > 0 && (User.IsInRole("Admin") || User.IsInRole("HR")) ? "Y": "N";
+            model.PendingCliclable = model.PendingCount > 0 && (User.IsInRole("Admin") || User.IsInRole("HR")) ? "Y" : "N";
 
             return View(model);
         }

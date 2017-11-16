@@ -14,5 +14,9 @@ namespace Onboard.Web.UI.Models.HomeViewModels
         public int UnassignedCount { get; set; }
 
         public int PendingCount { get; set; }
+
+        public string UsassignedCliclable { get; set; }
+
+        public string PendingCliclable { get; set; }
     }
 }

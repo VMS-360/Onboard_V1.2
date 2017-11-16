@@ -7,6 +7,8 @@ namespace Onboard.Web.UI.Models.HRViewModels
 {
     public class ManagementViewModel
     {
+        public string ActiveTab { get; set; }
+
         public IList<CandidateViewModel> PendingCandidates { get; set; }
 
         public IList<CandidateViewModel> AssignedCandidates { get; set; }

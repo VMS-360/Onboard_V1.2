@@ -3,6 +3,8 @@
     ViewData["Title"] = "Onbaord - Home";
 }
 
+@Html.HiddenFor(r => r.UsassignedCliclable)
+@Html.HiddenFor(r => r.PendingCliclable)
 <div class="row  border-bottom white-bg dashboard-header">
     <div class="col-lg-12">
         <h2>Welcome @Model.FirstName </h2>
@@ -14,7 +16,7 @@
             <div class="row">
                 <div class="col-lg-3">
                     <div class="widget style1 red-bg">
-                        <div class="row">
+                        <div class="row" id="div-unassigned" url ="@Url.Action("Management", "HumanResource", new { tab = "U" }) ">
                             <div class="col-xs-4">
                                 <i class="fa fa-ban fa-5x"></i>
                             </div>
@@ -27,11 +29,11 @@
                 </div>
                 <div class="col-lg-3">
                     <div class="widget style1 yellow-bg">
-                        <div class="row">
+                        <div class="row" id="div-pending" url ="@Url.Action("Management", "HumanResource", new { tab = "P" }) ">
                             <div class="col-xs-4">
                                 <i class="fa fa-clock-o fa-5x"></i>
                             </div>
-                            <div class="col-xs-8 text-right">
+                            <div class="col-xs-8 text-right" >
                                 <span> Pending Candidates </span>
                                 <h2 class="font-bold">@Model.PendingCount</h2>
                             </div>
@@ -222,6 +224,41 @@
                     }
                 }
             });
+
+            // make buttons clickable
+            var unasClick = $('#UsassignedCliclable').val();
+            var pendClick = $('#PendingCliclable').val();
+
+            if (unasClick == 'Y')
+            {
+                $("#div-unassigned").css('cursor', 'pointer');
+            }
+            else
+            {
+                $("#div-unassigned").css('cursor', 'default');
+            }
+
+            if (pendClick == 'Y') {
+                $("#div-pending").css('cursor', 'pointer');
+            }
+            else
+            {
+                $("#div-pending").css('cursor', 'default');
+            }
+        });
+
+        $(document).on('click', '#div-unassigned', function () {
+            var unasClick = $('#UsassignedCliclable').val();
+            if (unasClick == 'Y') {
+                window.location = $(this).attr("url");
+            }
+        });
+
+        $(document).on('click', '#div-pending', function () {
+            var pendClick = $('#PendingCliclable').val();
+            if (pendClick == 'Y') {
+                window.location = $(this).attr("url");
+            }
         });
     </script>
 }

@@ -48,9 +48,18 @@ namespace Onboard.Web.UI.Controllers
             return View();
         }
 
-        public IActionResult Management()
+        public IActionResult Management(string tab)
         {
             ManagementViewModel model = new ManagementViewModel();
+            if (string.IsNullOrEmpty(tab))
+            {
+                model.ActiveTab = "P";
+            }
+            else
+            {
+                model.ActiveTab = tab;
+            }
+            
             var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
             model.PendingCandidates = this._candidateService.GetPendingCandidates(loggedUser.ProductOwnerId);
             model.AssignedCandidates = this._candidateService.GetMyCandidates(loggedUser.Id, loggedUser.ProductOwnerId);
