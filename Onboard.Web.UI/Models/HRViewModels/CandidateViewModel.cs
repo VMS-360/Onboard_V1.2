@@ -70,6 +70,14 @@ namespace Onboard.Web.UI.Models.HRViewModels
             }
         }
 
+        public string OnboardDateString
+        {
+            get
+            {
+                return string.Format("Onboarded {0}.{1}.{2} ", this.OnboardedDate.Month, this.OnboardedDate.Day, this.OnboardedDate.Year.ToString().Length == 4 ? this.OnboardedDate.Year.ToString().Substring(2, 2) : "1");
+            }
+        }
+
         public string Created
         {
             get
@@ -180,6 +188,8 @@ namespace Onboard.Web.UI.Models.HRViewModels
         public DateTime EndDate { get; internal set; }
         public DateTime StartDate { get; internal set; }
 
+        public DateTime OnboardedDate { get; set; }
+
         public string StartDateString
         {
             get
@@ -193,6 +203,14 @@ namespace Onboard.Web.UI.Models.HRViewModels
             get
             {
                 return this.EndDate.ToString("MM/dd/yyyy", CultureInfo.CreateSpecificCulture("en-US"));
+            }
+        }
+
+        public string Status
+        {
+            get
+            {
+                return this.OnboardedDate == new DateTime() ? string.IsNullOrEmpty(this.AssignedTo)? "Inactive" : "Pending" : "Active";
             }
         }
     }

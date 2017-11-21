@@ -40,7 +40,17 @@
                     <li class="active">
                         <a data-toggle="tab" href="#tab-pending">
                             @string.Format("{0} {1}'s Pending Candidates", user.FirstName, user.LastName)
-                            <span class="label label-danger" id="pending-count">@Model.PendingCandidates.Count</span>
+                            @if (Model.PendingCandidates.Count > 0)
+                            {
+                                //Yellow
+                                <span class="label yellow-bg" id="pending-count">@Model.PendingCandidates.Count</span>
+                            }
+                            else
+                            {
+                                //Green
+                                <span class="label panel-success" id="pending-count">@Model.PendingCandidates.Count</span>
+                            }
+                            
                         </a>
                     </li>
                     <li>
@@ -52,7 +62,7 @@
                     <li>
                         <a data-toggle="tab" href="#tab-declinations">
                             @string.Format("{0} {1}'s Declinations", user.FirstName, user.LastName)
-                            <span class="label label-primary" id="my-count">@Model.AssignedCandidates.Count</span>
+                            <span class="label label-primary" id="my-count">@Model.DeclinedCandidates.Count</span>
                         </a>
                     </li>
                 }

@@ -14,5 +14,7 @@ namespace Onboard.Web.UI.Models.HRViewModels
         public IList<CandidateViewModel> AssignedCandidates { get; set; }
 
         public IList<CandidateViewModel> RecentOnboards { get; set; }
+
+        public IList<CandidateViewModel> DeclinedCandidates { get; set; }
     }
 }

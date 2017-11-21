@@ -63,7 +63,7 @@ namespace Onboard.Web.UI.Controllers
             var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
             model.PendingCandidates = this._candidateService.GetPendingCandidates(loggedUser.ProductOwnerId);
             model.AssignedCandidates = this._candidateService.GetMyCandidates(loggedUser.Id, loggedUser.ProductOwnerId);
-            model.RecentOnboards = this._candidateService.GetOnboardCandidates(loggedUser.Id, loggedUser.ProductOwnerId);
+            model.RecentOnboards = this._candidateService.GetOnboardCandidates(loggedUser.Id, loggedUser.ProductOwnerId).Where(r => r.OnboardedDate >= DateTime.Now.AddDays(-30)).ToList();
 
             var test = _lookupService.GetTaxStatuses();
 

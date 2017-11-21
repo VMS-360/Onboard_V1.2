@@ -16,5 +16,6 @@ namespace Onboard.Web.UI.Services
         IList<CandidateViewModel> GetAllOnboardedCandidates(int productOwnerId, int enrollmentId);
         CandidateViewModel GetConsultantDetails(int enrollmentId);
         IList<DateTime?> GetOnboardDates(int productOwnerId);
+        IList<CandidateViewModel> GetDeclinedCandidates(int productOwnerId);
     }
 }

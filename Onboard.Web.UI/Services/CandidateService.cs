@@ -152,6 +152,7 @@ namespace Onboard.Web.UI.Services
                                       VendorName = r.Vendor.CompanyName,
                                       AssignedTo = r.HRUserId,
                                       AccountManager = r.ProtfolioManagerId,
+                                      OnboardedDate = r.OnboardedDate
                                   }).ToList();
 
             return enrollments.Select(r => new CandidateViewModel
@@ -169,6 +170,39 @@ namespace Onboard.Web.UI.Services
                 VendorName = r.VendorName == null ? "" : r.VendorName,
                 AssignedTo = r.AssignedTo == null ? "" : r.AssignedTo.ToString(),
                 AccountManager = r.AccountManager == null ? "" : r.AccountManager.ToString(),
+                OnboardedDate = r.OnboardedDate == null ? new DateTime() : (DateTime)r.ModifiedDate,
+            }).ToList();
+        }
+
+        public IList<CandidateViewModel> GetDeclinedCandidates(int productOwnerId)
+        {
+            var enrollments = this._context
+                                  .Enrollment
+                                  .Where(r => r.Candidate.ProductOwnerId == productOwnerId &&
+                                              r.InactiveDate != null)
+                                  .Select(r => new
+                                  {
+                                      EnrollmentId = r.EnrollmentId,
+                                      CandidateId = r.Candidate.CandidateId,
+                                      FirstName = r.Candidate.FirstName,
+                                      LastName = r.Candidate.LastName,
+                                      ClientName = r.Client.CompanyName,
+                                      CreatedDate = r.CreatedDate,
+                                      ModifiedDate = r.ModifiedDate,
+                                      ModifiedBy = r.ModifiedUser,
+                                      AccountManager = r.ProtfolioManagerId
+                                  }).ToList();
+
+            return enrollments.Select(r => new CandidateViewModel
+            {
+                EnrollmentId = r.EnrollmentId,
+                CandidateId = r.CandidateId,
+                FirstName = r.FirstName,
+                LastName = r.LastName,
+                CreatedDate = r.CreatedDate == null ? new DateTime() : (DateTime)r.CreatedDate,
+                ModifiedDate = r.ModifiedDate == null ? new DateTime() : (DateTime)r.ModifiedDate,
+                ModifiedBy = r.ModifiedBy,
+                AccountManager = r.AccountManager == null ? "" : r.AccountManager.ToString()
             }).ToList();
         }
 

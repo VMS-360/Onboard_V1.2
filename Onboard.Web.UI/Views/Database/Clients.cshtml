@@ -2,11 +2,6 @@
     @{
         ViewData["Title"] = "Onbaord - Clients";
     }
-    <style>
-        .row-select {
-            background-color: #5a8dc2;
-        }
-    </style>
 
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-sm-8">
@@ -31,15 +26,6 @@
             <div class="wrapper wrapper-content animated fadeInUp">
                 <div class="ibox">
                     <div class="ibox-content">
-                        <div class="m-b-md col-lg-9">
-                            <h2>Clients</h2>
-                        </div>
-                        <div class="col-lg-3">
-                            <dl class="dl-horizontal pull-right">
-                                <span id="client-count">@Model.Count()</span>
-                                Clients
-                            </dl>
-                        </div>
                         <div class="row m-b-sm m-t-sm">
                             <div class="col-md-6">
                                 <div class="input-group">
@@ -47,6 +33,14 @@
                                         <button type="button" class="btn btn-sm btn-primary" action="search-client"> Go!</button>
                                     </span>
                                 </div>
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-3">
+                                <dl class="dl-horizontal pull-right" style="margin-top:12px; margin-bottom:0px;">
+                                    <span id="client-count">@Model.Count()</span>
+                                    Clients
+                                </dl>
                             </div>
                         </div>
                         <div id="clients-list">
@@ -179,8 +173,9 @@
                     });
                 }
                 }).on('click', '#Client-Lists td', function () {
-                    $("#Client-Lists td").removeClass("row-select");
+                    $("#Client-Lists td").removeClass("row-select").removeClass("row-select-blk");
                     $(this).closest('tr').find('td').addClass("row-select");
+                    $(this).closest('tr').find('td:last').removeClass("row-select").addClass("row-select-blk");
 
                     var clientId = $(this).closest('tr').attr("pk-id");
                     $.ajax({

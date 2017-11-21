@@ -154,3 +154,12 @@ input.input-validation-error:focus {
 .check-link[clickable=no] {
     cursor: default!important;
 }
+
+.row-select {
+    background-color: #5a8dc2;
+    color: #fff;
+}
+
+.row-select-blk {
+    background-color: #5a8dc2;
+}
