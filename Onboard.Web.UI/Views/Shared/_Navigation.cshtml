@@ -40,13 +40,19 @@
             <li class="@Html.IsSelected(controller: "Home")">
                 <a href="@Url.Action("Index", "Home")"><i class="fa fa-home menu-logo"></i> <span class="nav-label" data-i18n="nav.home">Home</span></a>
             </li>
-            <li class="@Html.IsSelected(controller: "AccountManager")">
-                <a href="@Url.Action("Index", "AccountManager")"><i class="fa fa-paper-plane menu-logo"></i> <span class="nav-label" data-i18n="nav.accountmanager">Account Manager</span></a>
-            </li>
+            @if (User.IsInRole("Admin") || User.IsInRole("Account Manager"))
+            {
+                <li class="@Html.IsSelected(controller: "AccountManager")">
+                    <a href="@Url.Action("Index", "AccountManager")"><i class="fa fa-paper-plane menu-logo"></i> <span class="nav-label" data-i18n="nav.accountmanager">Account Manager</span></a>
+                </li>
+            }
 
+@if (User.IsInRole("Admin") || User.IsInRole("HR"))
+{
             <li class="@Html.IsSelected(controller: "HumanResource")">
                 <a href="@Url.Action("Management", "HumanResource")"><i class="fa fa-users menu-logo"></i> <span class="nav-label" data-i18n="nav.humanresource">Human Resources</span></a>
             </li>
+}
 
             @*<li class="@Html.IsSelected(controller: "HumanResource")">
                 <a href="#"><i class="fa fa-users menu-logo"></i> <span class="nav-label" data-i18n="nav.humanresource">Human Resources</span> <span class="fa arrow"></span></a>
@@ -54,12 +60,20 @@
                     <li class="@Html.IsSelected(action: "Management")"><a href="@Url.Action("Management", "HumanResource")">Management</a></li>
                 </ul>
             </li>*@
+@if (User.IsInRole("Admin") || User.IsInRole("Portfolio"))
+{
             <li class="@Html.IsSelected(controller: "PortfolioManager")">
                 <a href="@Url.Action("Index", "PortfolioManager")"><i class="fa fa-folder-open menu-logo"></i> <span class="nav-label" data-i18n="nav.portfoliomanager">Portfolio Manager</span></a>
             </li>
+}
+@if (User.IsInRole("Admin") || User.IsInRole("Executive"))
+{
             <li class="@Html.IsSelected(controller: "Executive")">
                 <a href="@Url.Action("Index", "Executive")"><i class="fa fa-shield menu-logo"></i> <span class="nav-label" data-i18n="nav.executive">Executive</span></a>
             </li>
+}
+@if (User.IsInRole("Admin"))
+{
             <li class="@Html.IsSelected(controller: "Maintenance")">
                 <a href="#"><i class="fa fa-wrench menu-logo"></i> <span class="nav-label" data-i18n="nav.humanresource">Settings</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Maintenance", cssClass: "in")">
@@ -69,6 +83,7 @@
                     <li class="@Html.IsSelected(action: "Users")"><a href="@Url.Action("Users", "Maintenance")">Grouping</a></li>
                 </ul>*@
             </li>
+}
             <li class="@Html.IsSelected(controller: "Database")">
                 <a href="#"><i class="fa fa-wrench menu-logo"></i> <span class="nav-label" data-i18n="nav.database">Database</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Database", cssClass: "in")">

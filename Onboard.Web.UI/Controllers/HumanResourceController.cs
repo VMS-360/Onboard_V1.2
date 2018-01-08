@@ -10,6 +10,7 @@ using Onboard.Web.UI.Models;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Onboard.Web.UI.Models.DatabaseViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Onboard.Web.UI.Controllers
 {
@@ -48,6 +49,7 @@ namespace Onboard.Web.UI.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Admin, HR")]
         public IActionResult Management(string tab)
         {
             ManagementViewModel model = new ManagementViewModel();

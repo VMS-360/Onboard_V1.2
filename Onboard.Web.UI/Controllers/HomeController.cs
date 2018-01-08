@@ -25,7 +25,7 @@ namespace Onboard.Web.UI.Controllers
             this._userManager = userManager;
         }
 
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin, HR, Account Manager, Portfolio, Accounting, Executive")]
         public IActionResult Index()
         {
             var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
