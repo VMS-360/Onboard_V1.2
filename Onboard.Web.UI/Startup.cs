@@ -240,7 +240,9 @@ new ApplicationUser { UserName = "JHyde", Email = "JHyde@themesoft.com", FirstNa
 new ApplicationUser { UserName = "alker", Email = "alker@themesoft.com", FirstName = "Jay", LastName = "Walker", IsInternal ="N" },
 new ApplicationUser { UserName = "Joole", Email = "Joole@themesoft.com", FirstName = "Jean", LastName = "Poole", IsInternal ="N" },
 new ApplicationUser { UserName = "JTull", Email = "JTull@themesoft.com", FirstName = "Jenny", LastName = "Tull", IsInternal ="N" },
-new ApplicationUser { UserName = "JAtrick", Email = "JAtrick@themesoft.com", FirstName = "Jerry", LastName = "Atrick", IsInternal ="N" }
+new ApplicationUser { UserName = "meena", Email = "meena@themesoft.com", FirstName = "Meena", LastName = "pv", IsInternal ="Y" },
+new ApplicationUser { UserName = "valli", Email = "valli@themesoft.com", FirstName = "valli", LastName = "pv", IsInternal ="Y" },
+new ApplicationUser { UserName = "JAtrick", Email = "JAtrick@themesoft.com", FirstName = "Jerry", LastName = "Atrick", IsInternal ="Y" }
             };
 
             UserManager<ApplicationUser> userManager = app.ApplicationServices.GetService<UserManager<ApplicationUser>>();
@@ -248,7 +250,7 @@ new ApplicationUser { UserName = "JAtrick", Email = "JAtrick@themesoft.com", Fir
             {
                 if (userManager.Users.Where(r => r.UserName == user.UserName).FirstOrDefault() == null)
                 {
-                    var newUser = await userManager.CreateAsync(user, "Abc@123.com");
+                    var newUser = await userManager.CreateAsync(user, "theme");
                     if (newUser.Succeeded)
                     {
                         var dbUser = userManager.Users.Where(r => r.UserName == user.UserName).First();

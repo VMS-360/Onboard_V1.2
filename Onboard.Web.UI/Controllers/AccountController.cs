@@ -64,9 +64,11 @@ namespace Onboard.Web.UI.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
+
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+                Console.WriteLine(result);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation(1, "User logged in.");

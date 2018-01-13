@@ -3,6 +3,7 @@ using Onboard.Web.UI.DataContexts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Onboard.Web.UI.Services
@@ -10,6 +11,24 @@ namespace Onboard.Web.UI.Services
     public class LookupService : ILookupService
     {
         private readonly OnboardDb _context;
+
+        public String SendEmailAsync(string email, string subject, string message)
+        {
+
+
+            string from = email;
+            string to = email;
+            //string subject = "This is the subject";
+            string plainTextBody = "This is a great message.";
+            MailMessage mailMessage = new MailMessage(from, to, subject, plainTextBody);
+            string smtpServer = "smtp.gmail.com";
+            SmtpClient client = new SmtpClient(smtpServer);
+             client.Send(mailMessage);
+            return "";
+
+
+
+        }
 
         public LookupService(OnboardDb context)
         {
@@ -126,7 +145,6 @@ namespace Onboard.Web.UI.Services
                 new SelectListItem { Value = "OK", Text = "Oklahoma"},
                 new SelectListItem { Value = "OR", Text = "Oregon"},
                 new SelectListItem { Value = "PA", Text = "Pennsylvania"},
-                new SelectListItem { Value = "RI", Text = "Rhode Island"},
                 new SelectListItem { Value = "SC", Text = "South Carolina"},
                 new SelectListItem { Value = "SD", Text = "South Dakota"},
                 new SelectListItem { Value = "TN", Text = "Tennessee"},

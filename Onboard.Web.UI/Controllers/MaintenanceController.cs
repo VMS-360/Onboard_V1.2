@@ -234,7 +234,7 @@ namespace Onboard.Web.UI.Controllers
                         if (!userResult.Succeeded)
                         {
                             ModelState.AddModelError("Password", "Adding Password for user " + user.UserName +
-                                                           " failed with error(s): " + userResult.Errors);
+                                                           " failed with error(s): " + userResult);
                             return this.GetViewResult(user);
                         }
                     }

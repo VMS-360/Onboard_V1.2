@@ -18,19 +18,19 @@ namespace Onboard.Web.UI.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ICompositeViewEngine _viewEngine;
 
-        public HomeController(ICandidateService candidateService, UserManager<ApplicationUser> userManager, 
+        public HomeController(ICandidateService candidateService, UserManager<ApplicationUser> userManager,
             ICompositeViewEngine viewEngine) : base(viewEngine)
         {
             this._candidateService = candidateService;
             this._userManager = userManager;
         }
 
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin, HR, Account Manager, Portfolio, Accounting, Executive")]
         public IActionResult Index()
         {
             var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
             DashboardViewModel model = new DashboardViewModel();
-            if(loggedUser !=null)
+            if (loggedUser != null)
             {
                 model.FirstName = loggedUser.FirstName;
                 model.LastName = loggedUser.LastName;
@@ -39,7 +39,7 @@ namespace Onboard.Web.UI.Controllers
             model.UnassignedCount = this._candidateService.GetPendingCandidates(loggedUser.ProductOwnerId).Count();
             model.PendingCount = this._candidateService.GetMyCandidates(loggedUser.Id, loggedUser.ProductOwnerId).Count();
 
-            model.UsassignedCliclable = model.UnassignedCount > 0 && (User.IsInRole("Admin") || User.IsInRole("HR")) ? "Y": "N";
+            model.UsassignedCliclable = model.UnassignedCount > 0 && (User.IsInRole("Admin") || User.IsInRole("HR")) ? "Y" : "N";
             model.PendingCliclable = model.PendingCount > 0 && (User.IsInRole("Admin") || User.IsInRole("HR")) ? "Y" : "N";
 
             return View(model);

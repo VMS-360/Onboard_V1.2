@@ -9,6 +9,10 @@
     <UserSecretsId>aspnet-Onboard.Web.UI-18ad289c-a59b-4b1d-a9fa-d4f0855df139</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Remove="Views\Shared\TextFile.cshtml" />
+  </ItemGroup>
+
   
   <ItemGroup>
     <PackageReference Include="kendo.Mvc" Version="2016.2.630-Preview" />

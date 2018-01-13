@@ -10,6 +10,8 @@ using Onboard.Web.UI.Models;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Onboard.Web.UI.Models.DatabaseViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Net.Mail;
 
 namespace Onboard.Web.UI.Controllers
 {
@@ -48,6 +50,7 @@ namespace Onboard.Web.UI.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Admin, HR")]
         public IActionResult Management(string tab)
         {
             ManagementViewModel model = new ManagementViewModel();
@@ -74,6 +77,7 @@ namespace Onboard.Web.UI.Controllers
         public IActionResult UpdateEnrollmentTaskList(string id, string state, string type, string val, string tagHelper, string enrollmentId)
         {
             var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
+
             this._checklistService.UpdateEnrollmentChecklistItem(Convert.ToInt32(id), state == "Y" ? true : false, type, val, enrollmentId, User.Identity.Name, loggedUser.FirstName + " " + loggedUser.LastName);
             IList<ActivityViewModel> activityList = new List<ActivityViewModel>();
             if (!string.IsNullOrEmpty(enrollmentId))
@@ -286,13 +290,13 @@ namespace Onboard.Web.UI.Controllers
             model.Clients = this._lookupService.GetClients(loggedUser.ProductOwnerId);
             model.States = this._lookupService.GetStates();
             if (!string.IsNullOrEmpty(model.Client))
-            {
+           {
                 model.ClientContacts = this._lookupService.GetClientContacts(Convert.ToInt32(model.Client));
             }
             else
             {
                 model.ClientContacts = this._lookupService.GetClientContacts(Convert.ToInt32(model.Clients.First().Value));
-            }
+           }
             
             //viewModel.DurationMonths = ;
             //viewModel.DurationYears = ;
@@ -302,13 +306,30 @@ namespace Onboard.Web.UI.Controllers
                             {
                                 Success = true,
                                 Message = string.Empty,
-                                Html = this.RenderPartialViewToString("_AddCandidate", model)
+                                Html = this.RenderPartialViewToString("_AddCandidateByHR", model)
                             });
         }
 
         public IActionResult AddCandiate(AddCandidateViewModel model)
         {
             var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
+
+            MailMessage msg = new MailMessage();
+            System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient();
+
+            msg.Subject = "OnBoard Application : New Candidate";
+            msg.Body = "<html><body><div style='border: 0.5px solid black;padding:10px 100px 10px 10px'><h1>New Candidate has been created for paperwork, please login to portal to start paperwork <a href='http://3sixty.us'> Login Here! </a> </h1></div></body></html>";
+            msg.From = new MailAddress("onboard@themesoft.com");
+            msg.To.Add("meena@themesoft.com");
+            msg.IsBodyHtml = true;
+            client.Host = "smtp.office365.com";
+            System.Net.NetworkCredential basicauthenticationinfo = new System.Net.NetworkCredential("onboard@themesoft.com", "theme@123");
+            client.Port = int.Parse("587");
+            client.EnableSsl = true;
+            client.UseDefaultCredentials = false;
+            client.Credentials = basicauthenticationinfo;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.Send(msg);
 
             if (model != null && ModelState.IsValid)
             {
@@ -356,7 +377,7 @@ namespace Onboard.Web.UI.Controllers
                             {
                                 Success = false,
                                 Message = "Validation Failed",
-                                Html = this.RenderPartialViewToString("_AddCandidate", model)
+                                Html = this.RenderPartialViewToString("_AddCandidateByHR", model)
                             });
         }
 
@@ -648,6 +669,24 @@ namespace Onboard.Web.UI.Controllers
         public IActionResult OnboardCandidate(string enrollmentId)
         {
             var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
+
+            MailMessage msg = new MailMessage();
+            System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient();
+
+            msg.Subject = "OnBoard Application : Candidate OnBoarded";
+            msg.Body = "<html><body><div style='border: 0.5px solid black;padding:10px 100px 10px 10px'><h1>Candidate has been OnBoarded, please login to see more details <a href='http://3sixty.us'> Login Here! </a> </h1> </div></body></html>";
+            msg.From = new MailAddress("onboard@themesoft.com");
+            msg.To.Add("meena@themesoft.com");
+            msg.IsBodyHtml = true;
+            client.Host = "smtp.office365.com";
+            System.Net.NetworkCredential basicauthenticationinfo = new System.Net.NetworkCredential("onboard@themesoft.com", "theme@123");
+            client.Port = int.Parse("587");
+            client.EnableSsl = true;
+            client.UseDefaultCredentials = false;
+            client.Credentials = basicauthenticationinfo;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.Send(msg);
+
             if (!string.IsNullOrEmpty(enrollmentId))
             {
                 try

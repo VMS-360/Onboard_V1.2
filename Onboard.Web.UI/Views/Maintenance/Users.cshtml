@@ -104,9 +104,11 @@
                             if (result.Success) {
                                 $('#UserGrid1').data('kendoGrid').dataSource.read();
                                 $('#add-user').modal('toggle');
+                               
                             }
                             else {
                                 $('#div-add-user').html(result.Html);
+                             
                             }
                         }
                     }
@@ -123,6 +125,7 @@
                     else {
                         if (result.Success) {
                             $('#div-add-user').html(result.Html);
+                            
                         }
                     }
                 }

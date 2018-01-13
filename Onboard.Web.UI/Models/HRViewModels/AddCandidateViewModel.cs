@@ -46,6 +46,7 @@ namespace Onboard.Web.UI.Models.HRViewModels
         public string State { get; set; }
 
         [DataType(DataType.Text)]
+        [MaxLength(5, ErrorMessage = "Zip should be 5 characters long")]
         public string Zip { get; set; }
 
         [DataType(DataType.Text)]
