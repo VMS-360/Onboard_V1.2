@@ -212,6 +212,15 @@ namespace Onboard.Web.UI.Controllers
                     newUser.Email = user.Email;
                     newUser.ProductOwnerId = currentUser.ProductOwnerId;
 
+                    //Look for duplicate user email.
+                    var dupUser = this._userManager.Users.Where(r => r.Email.ToLower() == user.Email.ToLower()).FirstOrDefault();
+                    if(dupUser != null)
+                    {
+                        ModelState.AddModelError("Email", "An user with the same email " + user.Email +
+                                                       " already exists.");
+                        return this.GetViewResult(user);
+                    }
+
                     var userResult = await this._userManager.CreateAsync(newUser);
                     theUser = await this._userManager.FindByNameAsync(user.UserName);
 

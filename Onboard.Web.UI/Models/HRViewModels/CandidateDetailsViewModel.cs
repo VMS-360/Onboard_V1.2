@@ -19,6 +19,8 @@ namespace Onboard.Web.UI.Models.HRViewModels
 
         public string AccountManager { get; internal set; }
 
+        public string AccountManagerName { get; internal set; }
+
         public string VendorName { get; set; }
 
         public string EndClient { get; set; }

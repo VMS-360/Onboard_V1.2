@@ -151,6 +151,25 @@ namespace Onboard.Web.UI.Controllers
             CandidateViewModel model = new CandidateViewModel();
             var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
             model = this._candidateService.GetMyCandidates(loggedUser.Id, loggedUser.ProductOwnerId).Where(r => r.CandidateId == candidateId).FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(model.AccountManager))
+            {
+                var acManager = this._userManager.Users.Where(r => r.Id == Convert.ToInt32(model.AccountManager)).FirstOrDefault();
+                if (acManager != null)
+                {
+                    model.AccountManagerName = acManager.FirstName + " " + acManager.LastName;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(model.AssignedTo))
+            {
+                var acManager = this._userManager.Users.Where(r => r.Id == Convert.ToInt32(model.AssignedTo)).FirstOrDefault();
+                if (acManager != null)
+                {
+                    model.AssignedTo = acManager.FirstName + " " + acManager.LastName;
+                }
+            }
+
             model.CommentsList = this._enrollmentService.GetEnrollmentComments(model.EnrollmentId);
             model.ActivityList = this._enrollmentService.GetEnrollmentActivity(model.EnrollmentId);
             model.Details = this._enrollmentService.GetEditCandidateDetails(model.EnrollmentId);
@@ -260,6 +279,15 @@ namespace Onboard.Web.UI.Controllers
             if (enrollmentId != null && enrollmentId.Length > 0)
             {
                 viewModel = this._candidateService.GetCandateDetails(Convert.ToInt32(enrollmentId));
+
+                if (!string.IsNullOrEmpty(viewModel.AccountManager))
+                {
+                    var acManager = this._userManager.Users.Where(r => r.Id == Convert.ToInt32(viewModel.AccountManager)).FirstOrDefault();
+                    if (acManager != null)
+                    {
+                        viewModel.AccountManagerName = acManager.FirstName + " " + acManager.LastName;
+                    }
+                }
             }
 
             return this.Json(

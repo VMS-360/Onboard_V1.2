@@ -235,7 +235,7 @@ namespace Onboard.Web.UI.Controllers
                             {
                                 Success = true,
                                 Message = string.Empty,
-                                Html = this.RenderPartialViewToString("AddEndClient", model)
+                                Html = this.RenderPartialViewToString("EndClientList", model)
                             });
         }
 
@@ -308,6 +308,25 @@ namespace Onboard.Web.UI.Controllers
             model = this._candidateService.GetAllOnboardedCandidates(loggedUser.ProductOwnerId, 0);
 
             return View(model);
+        }
+
+        public IActionResult ConsultantSearch(string searchString)
+        {
+            IList<CandidateViewModel> model = new List<CandidateViewModel>();
+            var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
+            model = this._candidateService.GetAllOnboardedCandidates(loggedUser.ProductOwnerId, 0);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                model = model.Where(r => !string.IsNullOrEmpty(r.ConsultantName) && r.ConsultantName.ToUpper().Contains(searchString.ToUpper())).ToList();
+            }
+
+            return this.Json(
+                            new
+                            {
+                                Success = true,
+                                Message = string.Empty,
+                                Html = this.RenderPartialViewToString("_ConsultantList", model)
+                            });
         }
 
         public IActionResult ConsultantDetails(string EnrollmentId)

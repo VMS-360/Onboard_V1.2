@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Onbaord - Users";
 }
+<link href="~/lib/sweetalert/dist/sweetalert.css" rel="stylesheet" />
 <div class="wrapper wrapper-content container-kendo">
     @Html.Partial("_UserList4")
 </div>
@@ -38,6 +39,7 @@
     @section Scripts {
         <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
         <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+        <script src="~/lib/sweetalert/dist/sweetalert.min.js"></script>
         <script type="text/javascript">
         function error_handler(e) {
             if (e.errors) {
@@ -100,7 +102,17 @@
                             if (result.Success) {
                                 $('#UserGrid1').data('kendoGrid').dataSource.read();
                                 //$('#add-user').modal('toggle');
-                                $('#add-user').modal({ backdrop: 'static', keyboard: false })
+                                swal({
+                                        title: "User Added!",
+                                        text: "New User added successfully.",
+                                        type: "success"
+                                    },
+                                    function () {
+                                        //alert('here');
+                                        //    $('#add-user').modal({ backdrop: 'static', keyboard: false })
+                                        window.location.href = '@Url.Action("Users4", "Maintenance")';
+                                        });
+
                             }
                             else {
                                 $('#div-add-user').html(result.Html);

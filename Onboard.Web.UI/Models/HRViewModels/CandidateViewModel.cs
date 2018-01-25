@@ -168,6 +168,8 @@ namespace Onboard.Web.UI.Models.HRViewModels
 
         public string AccountManager { get; internal set; }
 
+        public string AccountManagerName { get; internal set; }
+
         public IList<CommentsViewModel> CommentsList { get; internal set; }
 
         public IList<ActivityViewModel> ActivityList { get; internal set; }

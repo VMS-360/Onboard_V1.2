@@ -58,6 +58,22 @@
    <script>
        $(document).ready(function () {
 
+       }).on('click', 'button[action="search-consultant"]', function () {
+           $.ajax({
+               type: "GET",
+               url: '@Url.Action("ConsultantSearch", "Database")',
+               data: { 'searchString': $('input[placeholder="Search"]').val() },
+               success: function (result, textStatus, xhr) {
+                   if (xhr.status === 302) {
+                       alert("Your session has expired.  Please log in.");
+                   }
+                   else {
+                       if (result.Success) {
+                           $('#clients-list').html(result.Html);
+                       }
+                   }
+               }
+           })
        }).on('click', '#Consultant-Lists td', function () {
            $("#Consultant-Lists td").removeClass("row-select").removeClass("row-select-blk");
                     $(this).closest('tr').find('td').addClass("row-select");
@@ -79,10 +95,10 @@
                             }
                         }
                     });
-           });
+                });
 
-       $(document).ready(function () {
-           $('#Client-Lists td').css('cursor', 'pointer');
-       });
+                $(document).ready(function () {
+                    $('#Client-Lists td').css('cursor', 'pointer');
+                });
     </script>
     }

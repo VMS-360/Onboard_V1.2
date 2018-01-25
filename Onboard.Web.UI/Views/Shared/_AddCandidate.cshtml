@@ -75,7 +75,7 @@
                                 <select asp-for="VisaStatus"
                                         asp-items="Model.VisaTypes" class="form-control"></select>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" id="div-visa-expiration">
                                 <label>Visa Expiration *</label>
                                 <input id="VisaExpiration" name="VisaExpiration" type="date" class="form-control">
                                 @*@(Html.Kendo().DatePicker()

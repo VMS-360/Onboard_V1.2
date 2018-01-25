@@ -457,6 +457,14 @@
             })
 
             return false;
+            }).on('change', '#VisaStatus', function () {
+                if ($(this).val() == "1") {
+                    $("#div-visa-expiration").hide();
+                } else {
+                    $("#div-visa-expiration").show();
+                }
+
+                return false;
             }).on('change', '#Client', function () {
                 $.ajax({
                     type: "GET",
@@ -770,7 +778,11 @@
                     break;
                 case 1:
 
-                    var tabItems = [["FirstName", "First Name is Required"], ["LastName", "Last Name is Required"], ["VisaStatus", "Visa Status is Required"], ["VisaExpiration", "Visa Expiration is Required"]];
+                    var tabItems = [["FirstName", "First Name is Required"], ["LastName", "Last Name is Required"], ["VisaStatus", "Visa Status is Required"]];
+
+                    if ($("#VisaStatus option:selected").val() != 1) {
+                        tabItems.push(["VisaExpiration", "Visa Expiration is Required"]);
+                    }
 
                     if ($('#TaxStatus').val() != "C2C") {
                         tabItems.push(["SSN", "SSN is Required"], ["Email", "Email is Required"], ["Address", "Address is Required"], ["City", "City is Required"], ["State", "State is Required"], ["Zip", "Zip is Required"], ["Phone", "Phone is Required"]);
