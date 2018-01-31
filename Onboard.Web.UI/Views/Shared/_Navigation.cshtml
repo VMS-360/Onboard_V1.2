@@ -52,6 +52,9 @@
             <li class="@Html.IsSelected(controller: "HumanResource")">
                 <a href="@Url.Action("Management", "HumanResource")"><i class="fa fa-users menu-logo"></i> <span class="nav-label" data-i18n="nav.humanresource">Human Resources</span></a>
             </li>
+            <li class="@Html.IsSelected(controller: "HRManagement")">
+                <a href="@Url.Action("Index", "HRManagement")"><i class="fa fa-user-plus menu-logo"></i> <span class="nav-label" data-i18n="nav.humanresource">HR Management</span></a>
+            </li>
 }
 
             @*<li class="@Html.IsSelected(controller: "HumanResource")">

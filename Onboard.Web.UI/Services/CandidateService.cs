@@ -592,5 +592,26 @@ namespace Onboard.Web.UI.Services
                         .Select(r => r.OnboardedDate).ToList();
 
         }
+
+        public IList<int?> GetHRPeningEnrollmentCounts(int productOwnerId)
+        {
+            return this._context
+                       .Enrollment
+                       .Where(r => r.Candidate.ProductOwnerId == productOwnerId)
+                       .Select(r => r.HRUserId)
+                       .ToList();
+        }
+
+        public IList<int?> GetHROnboardedEnrollmentCounts(int productOwnerId)
+        {
+            return this._context
+                       .Enrollment
+                       .Where(r => r.Candidate.ProductOwnerId == productOwnerId &&
+                                    !string.IsNullOrEmpty(r.OnboardedIndicator) &&
+                                    r.OnboardedIndicator == "Y" &&
+                                    r.OnboardedDate >= DateTime.Today.AddDays(-30))
+                       .Select(r => r.HRUserId)
+                       .ToList();
+        }
     }
 }

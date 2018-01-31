@@ -1,0 +1,161 @@
+@using Microsoft.AspNetCore.Identity
+@using Onboard.Web.UI.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+        @model Onboard.Web.UI.Models.HRViewModels.ManagementViewModel
+        @{
+            ViewData["Title"] = "Onbaord - HR Management";
+        }
+        <style>
+            .page-heading {
+                padding: 0 10px 0px 10px !important;
+                margin-bottom: 10px;
+            }
+
+            .pad-top {
+                padding-top: 15px;
+            }
+        </style>
+
+        <link href="~/lib/steps/jquery.steps.css" rel="stylesheet" />
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-sm-8">
+                <h2>HR Management</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="tabs-container">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a data-toggle="tab" href="#tab-pend-candidates">
+                                All Pending HR Candidates
+                            </a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#tab-pend-reports">
+                                HR Pending Reports
+                            </a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#tab-complete-reports">
+                                HR Completed Reports
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                       
+                            <div id="tab-pend-candidates" class="tab-pane active">
+                                <div class="panel-body" id="divPendCandiates">
+                                    @Html.Partial("_AllPending", Model)
+                                </div>
+                            </div>
+                      
+                            <div id="tab-pend-reports" class="tab-pane">
+                                <div class="panel-body" id="divPendingReports">
+                                    @Html.Partial("_PendingReports", Model)
+                                </div>
+                            </div>
+                        <div id="tab-complete-reports" class="tab-pane">
+                            <div class="panel-body" id="divCompletedReports">
+                                @Html.Partial("_CompletedReports", Model)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @section scripts
+        {
+            <script src="~/lib/steps/jquery.steps.min.js"></script>
+            <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+            <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+            <environment names="Development">
+                <script src="~/lib/chartJs/Chart.min.js"></script>
+                <script src="~/lib/peity/jquery.peity.js"></script>
+            </environment>
+            <environment names="Staging,Production">
+                <script src="~/lib/chartJs/Chart.min.js"></script>
+                <script src="~/lib/peity/jquery.peity.min.js"></script>
+            </environment>
+            <script>
+                $(document).ready(function () {
+                    //$('#header-strip-addon').append('<span class="input-group-addon"><h4> &nbsp;&nbsp; Human Resources</h4></span >');
+                    //$('#header-strip-addon').append('<span class="input-group-addon"><button id= "btn-add-candidate" class="btn btn-outline btn-primary" type= "button" action="candidate-add"><i class="fa fa-user-plus"></i> Add Candidate</button></span >');
+
+                    $.ajax({
+                        type: "GET",
+                        url: '@Url.Action("PrepareGraph", "HRManagement")',
+                        data: { 'enrollmentId': 0 },
+                        success: function (result, textStatus, xhr) {
+                            if (xhr.status === 302) {
+                                alert("Your session has expired.  Please log in.");
+                            }
+                            else {
+                                if (result.Success) {
+
+                                    var lineData = {
+                                        labels: result.HREmployees,
+                                        datasets: [
+                                            {
+                                                label: "Total",
+                                                backgroundColor: 'rgba(35, 198, 200,0.5)',
+                                                borderColor: "rgba(35, 198, 200,0.7)",
+                                                pointBackgroundColor: "rgba(35, 198, 200,1)",
+                                                pointBorderColor: "#fff",
+                                                data: result.Candidates
+                                            }
+                                        ]
+                                    };
+
+                                    var lineOptions = {
+                                        responsive: true
+                                    };
+
+                                    var ctx = document.getElementById("pendingChart").getContext("2d");
+                                    new Chart(ctx, { type: 'horizontalBar', data: lineData, options: lineOptions });
+                                }
+                            }
+                        }
+                    });
+
+                    $.ajax({
+                        type: "GET",
+                        url: '@Url.Action("PrepareOnboardedGraph", "HRManagement")',
+                        data: { 'enrollmentId': 0 },
+                        success: function (result, textStatus, xhr) {
+                            if (xhr.status === 302) {
+                                alert("Your session has expired.  Please log in.");
+                            }
+                            else {
+                                if (result.Success) {
+
+                                    var lineData = {
+                                        labels: result.HREmployees,
+                                        datasets: [
+                                            {
+                                                label: "Total",
+                                                backgroundColor: 'rgba(35, 198, 200,0.5)',
+                                                borderColor: "rgba(35, 198, 200,0.7)",
+                                                pointBackgroundColor: "rgba(35, 198, 200,1)",
+                                                pointBorderColor: "#fff",
+                                                data: result.Candidates
+                                            }
+                                        ]
+                                    };
+
+                                    var lineOptions = {
+                                        responsive: true
+                                    };
+
+                                    var ctx = document.getElementById("completedChart").getContext("2d");
+                                    new Chart(ctx, { type: 'horizontalBar', data: lineData, options: lineOptions });
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+        }
