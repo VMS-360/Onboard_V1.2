@@ -16,7 +16,11 @@
                     <div class="col-lg-12">
                         <dl class="dl-horizontal pull-right">
                             <dt>Status:</dt>
-                            @if (Model.StatusIndicator == "Y")
+                            @if (Model.Inactive)
+                            {
+                                <dd><span class="label label-danger">Aborted </span></dd>
+                            }
+                            else if (Model.StatusIndicator == "Y")
                             {
                                 <dd><span class="label label-primary">Onboard </span></dd>
                             }
@@ -24,8 +28,9 @@
                             {
                                 <dd><span class="label label-warning">Pending </span></dd>
                             }
-                            
+
                         </dl>
+                        @Html.HiddenFor(r => r.EnrollmentId)
                     </div>
                     <div class="col-lg-5">
                         <dl class="dl-horizontal">
@@ -55,7 +60,48 @@
                             <dd class="text-navy">@Model.AccountManagerName</dd>
                         </dl>
                     </div>
-                </div>
+                    @if (Model.CommentsList != null)
+                    {
+                        <div class="col-sm-12">
+                            <a href="#" class="btn btn-white btn-sm" action="add-comment"><i class="fa fa-plus"></i> Add Comment </a>
+                            @if (Model.CommentsList.Count > 0)
+                            {
+                                <h4 class="modal-title">Comments</h4>
+                                <div id="div-cmt-list">
+                                    @Html.Partial("_OnboardComments", Model.CommentsList)
+                                </div>
+                            }
+                            
+                        </div>
+                        <div class="modal inmodal fade" id="add-comment-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                        <div class="row">
+                                            <div class="col-xs-pull-4">
+                                                <i class="fa fa-commenting-o fa-5x primary-color"></i>
+                                            </div>
+                                        </div>
+                                        <h4 class="modal-title">Add Comment</h4>
+                                        <small class="font-bold">Complete all required fields to add a new comment.</small>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="form-add-comment" action="#" class="">
+                                            <div id="div-add-comment">
+                                                @Html.Partial("_AddComment", new Onboard.Web.UI.Models.HRViewModels.CommentViewModel())
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-white" id="add-comment-close">Cancel</button>
+                                        <button type="button" class="btn btn-primary" id="add-comment-save">Save changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>

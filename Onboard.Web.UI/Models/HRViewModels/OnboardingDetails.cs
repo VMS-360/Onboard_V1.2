@@ -27,6 +27,8 @@ namespace Onboard.Web.UI.Models.HRViewModels
         public string Zip { get; set; }
         public string Phone { get; set; }
 
+        public int HrUserId { get; set; }
+
         public string PhoneString
         {
             get
@@ -90,5 +92,6 @@ namespace Onboard.Web.UI.Models.HRViewModels
         public int VendorId { get; internal set; }
         public int VendorContactId { get; internal set; }
         public string CurrentUser { get; internal set; }
+        public string CandidateFullName { get; set; }
     }
 }

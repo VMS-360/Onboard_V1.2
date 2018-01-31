@@ -78,6 +78,14 @@ namespace Onboard.Web.UI.Models.HRViewModels
             }
         }
 
+        public string DeclinedDateString
+        {
+            get
+            {
+                return string.Format("Declined {0}.{1}.{2} ", this.InactiveDate.Month, this.InactiveDate.Day, this.InactiveDate.Year.ToString().Length == 4 ? this.InactiveDate.Year.ToString().Substring(2, 2) : "1");
+            }
+        }
+
         public string Created
         {
             get
@@ -191,6 +199,7 @@ namespace Onboard.Web.UI.Models.HRViewModels
         public DateTime StartDate { get; internal set; }
 
         public DateTime OnboardedDate { get; set; }
+        public DateTime InactiveDate { get; set; }
 
         public string StartDateString
         {

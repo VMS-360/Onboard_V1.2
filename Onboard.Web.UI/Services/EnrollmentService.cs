@@ -117,7 +117,10 @@ namespace Onboard.Web.UI.Services
                                       StartDate = r.StartDate == null ? "" : r.StartDate.ToString(),
                                       EndDate = r.EndDate == null ? "" : r.EndDate.ToString(),
                                       VendorId = r.VendorId,
-                                      VendorContactId = r.VendorContactId
+                                      VendorContactId = r.VendorContactId,
+                                      HrUserId = r.HRUserId,
+                                      FirstName = r.Candidate.FirstName,
+                                      LastName = r.Candidate.LastName,
                                   }).ToList();
 
             OnboardingDetails detail = new OnboardingDetails();
@@ -138,6 +141,8 @@ namespace Onboard.Web.UI.Services
                 detail.EndDate = theDetail.EndDate;
                 detail.VendorId = theDetail.VendorId == null ? 0 : (int)theDetail.VendorId;
                 detail.VendorContactId = theDetail.VendorContactId == null ? 0 : (int)theDetail.VendorContactId;
+                detail.HrUserId = theDetail.HrUserId == null ? 0 : (int)theDetail.HrUserId;
+                detail.CandidateFullName = theDetail.FirstName + " " + theDetail.LastName;
             }
 
             // Load Vendor details

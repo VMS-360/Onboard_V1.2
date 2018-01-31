@@ -58,12 +58,57 @@ namespace Onboard.Web.UI.Controllers
             return View(model);
         }
 
+        public IActionResult PrepareAddComment(int enrollmentId)
+        {
+            CommentViewModel viewModel = new CommentViewModel();
+
+            viewModel.CommentEnrollmentId = enrollmentId;
+
+            return this.Json(
+                            new
+                            {
+                                Success = true,
+                                Message = string.Empty,
+                                Html = this.RenderPartialViewToString("_AddComment", viewModel)
+                            });
+        }
+
+        [HttpPost]
+        public IActionResult AddComment(string CommentEnrollmentId, string Comment)
+        {
+            CommentViewModel comment = new CommentViewModel();
+            comment.CommentEnrollmentId = Convert.ToInt32(CommentEnrollmentId);
+            comment.Comment = Comment;
+
+            if (comment != null && ModelState.IsValid)
+            {
+                var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
+                comment.CurrentUser = loggedUser.UserName;
+                this._enrollmentService.AddComment(comment);
+
+                IList<CommentsViewModel> model = this._enrollmentService.GetEnrollmentComments(comment.CommentEnrollmentId);
+                return this.Json(
+                                new
+                                {
+                                    Success = true,
+                                    Message = "Saved Successfully",
+                                    Html = this.RenderPartialViewToString("_OnboardComments", model),
+                                });
+            }
+            else
+            {
+                return this.GetViewResult(comment);
+            }
+        }
+
         public IActionResult PrepareCandiateDetails(string enrollmentId)
         {
             CandidateDetailsViewModel viewModel = new CandidateDetailsViewModel();
             if (enrollmentId != null && enrollmentId.Length > 0)
             {
                 viewModel = this._candidateService.GetCandateDetails(Convert.ToInt32(enrollmentId));
+                viewModel.EnrollmentId = Convert.ToInt32(enrollmentId);
+                viewModel.CommentsList = this._enrollmentService.GetEnrollmentComments(Convert.ToInt32(enrollmentId));
             }
 
             return this.Json(
@@ -72,6 +117,17 @@ namespace Onboard.Web.UI.Controllers
                                 Success = true,
                                 Message = string.Empty,
                                 Html = this.RenderPartialViewToString("_CandidateDetails", viewModel)
+                            });
+        }
+
+        private JsonResult GetViewResult(CommentViewModel comment)
+        {
+            return this.Json(
+                            new
+                            {
+                                Success = false,
+                                Message = "Validation failed",
+                                Html = this.RenderPartialViewToString("_AddComment", comment)
                             });
         }
     }

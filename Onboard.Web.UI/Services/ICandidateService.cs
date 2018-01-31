@@ -13,6 +13,7 @@ namespace Onboard.Web.UI.Services
         void AddCandidate(AddCandidateViewModel model, int productOwnerId);
         void AssignEnrollment(int enrollmentId, int hrUserId, string currentUser);
         void OnboardEnrollment(int enrollmentId, int hrUserId, string currentUser);
+        void AbortEnrollment(int enrollmentId, int hrUserId, string currentUser);
         IList<CandidateViewModel> GetAllOnboardedCandidates(int productOwnerId, int enrollmentId);
         CandidateViewModel GetConsultantDetails(int enrollmentId);
         IList<DateTime?> GetOnboardDates(int productOwnerId);

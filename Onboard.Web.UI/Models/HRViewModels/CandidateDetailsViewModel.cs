@@ -7,6 +7,8 @@ namespace Onboard.Web.UI.Models.HRViewModels
 {
     public class CandidateDetailsViewModel
     {
+        public int EnrollmentId { get; set; }
+
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
@@ -27,6 +29,8 @@ namespace Onboard.Web.UI.Models.HRViewModels
 
         public string ClientContact { get; set; }
 
+        public bool Inactive { get; set; }
+
         public DateTime CreatedDate { get; set; }
 
         public string DateCreatedString
@@ -36,5 +40,7 @@ namespace Onboard.Web.UI.Models.HRViewModels
                 return String.Format("{0:MM.dd.yy h:mm tt}", this.CreatedDate);
             }
         }
+
+        public IList<CommentsViewModel> CommentsList { get; internal set; }
     }
 }

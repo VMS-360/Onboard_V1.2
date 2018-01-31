@@ -300,6 +300,53 @@
             }
 
             return false;
+            })
+            .on('click', '#btn-abort-candidate', function () {
+                swal({
+                    title: "Confirm",
+                    text: "Are you sure you want to abort this candidate?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No",
+                    closeOnConfirm: false
+                }, function () {
+                    $.ajax({
+                        type: "GET",
+                        url: '@Url.Action("AbortCandidate", "HumanResource")',
+                        data: 'enrollmentId=' + $('#EnrollmentId').val(),
+                        error: function () {
+                            alert("An error occurred processing the request.");
+                        },
+                        success: function (result, textStatus, xhr) {
+                            if (xhr.status === 302) {
+                                alert("Your session has expired.  Please log in.");
+                            }
+                            else {
+                                if (result.Success) {
+                                    $('#span-status').html('Aborted');
+                                    swal({
+                                        title: "Abort!",
+                                        text: "Abort Candidate Success.",
+                                        type: "success"
+                                    },
+                                        function () {
+                                            window.location.href = '@Url.Action("Management", "HumanResource")';
+                                        });
+                                }
+                                else {
+                                    swal({
+                                        title: "Error",
+                                        text: result.Message
+                                    });
+                                }
+                            }
+                        }
+                    });
+                });
+
+            return false;
         })
         .on('click', '.todo-list a', function () {
             var $todoList = $(this).closest(".todo-list");

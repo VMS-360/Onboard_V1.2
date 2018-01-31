@@ -62,7 +62,7 @@
                     <li>
                         <a data-toggle="tab" href="#tab-declinations">
                             @string.Format("{0} {1}'s Declinations", user.FirstName, user.LastName)
-                            <span class="label label-primary" id="my-count">@Model.DeclinedCandidates.Count</span>
+                            <span class="label label-danger" id="my-count">@Model.DeclinedCandidates.Count</span>
                         </a>
                     </li>
                 }
@@ -79,7 +79,9 @@
                     </div>
                 </div>
                 <div id="tab-declinations" class="tab-pane">
-                    
+                    <div class="panel-body">
+                        @Html.Partial("_DeclinedCandidates", Model.DeclinedCandidates)
+                    </div>
                 </div>
             </div>
         </div>
@@ -132,7 +134,61 @@
             //$('#header-strip-addon').append('<span class="input-group-addon"><button id= "btn-add-candidate" class="btn btn-outline btn-primary" type= "button" action="candidate-add"><i class="fa fa-user-plus"></i> Add Candidate</button></span >');
         });
 
-        $(document).on('click', 'a[action="PendingCandidate-Accept"]', function () {
+        $(document)
+            .on('click', 'a[action="add-comment"]', function () {
+                 $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("PrepareAddComment", "AccountManager")',
+                    data: 'enrollmentId=' + $('#EnrollmentId').val(),
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#div-add-comment').html(result.Html);
+                                $('#add-comment-modal').modal({ backdrop: 'static', keyboard: false });
+                            }
+                        }
+                    }
+                });
+            }).on('click', '#add-comment-close', function () {
+                $('#add-comment-modal').modal('toggle');
+            }).on('click', '#add-comment-save', function () {
+                $("#form-add-comment").find(".validation-summary-errors")
+                    .addClass("validation-summary-valid")
+                    .removeClass("validation-summary-errors");
+
+                var validationInfo = $("#form-add-comment").data("unobtrusiveValidation");
+                if (!validationInfo || !validationInfo.validate || validationInfo.validate()) {
+
+                    var url = '@Url.Action("AddComment", "AccountManager")';
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $("#form-add-comment").serialize(),
+                        error: function () {
+                            alert("An error occurred processing the request.");
+                        },
+                        success: function (result, textStatus, xhr) {
+                            if (xhr.status === 302) {
+                                alert("Your session has expired.  Please log in.");
+                            }
+                            else {
+                                if (result.Success) {
+                                    $('#div-cmt-list').html(result.Html);
+                                    $('#add-comment-modal').modal('toggle');
+                                }
+                                else {
+                                    $('#div-add-comment').html(result.Html);
+                                }
+                            }
+                        }
+                    });
+                }
+            })
+            .on('click', 'a[action="PendingCandidate-Accept"]', function () {
             $('#Model-Accept-Name').html($(this).attr('candiate-details'));
 
             return false;
@@ -141,11 +197,12 @@
 
             return false;
         }).on('click', 'a[action="view-candidate"]', function () {
-            var userId = $(this).closest('tr').attr("pk-id");
+            var enrollId = $(this).closest('tr').attr("pk-id");
             $.ajax({
                 type: "GET",
+                cache: false,
                 url: '@Url.Action("PrepareCandiateDetails", "AccountManager")',
-                data: { 'enrollmentId': userId },
+                data: { 'enrollmentId': enrollId },
                 success: function (result, textStatus, xhr) {
                     if (xhr.status === 302) {
                         alert("Your session has expired.  Please log in.");

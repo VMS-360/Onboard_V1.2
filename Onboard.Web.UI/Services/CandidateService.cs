@@ -65,7 +65,8 @@ namespace Onboard.Web.UI.Services
                                   .Enrollment
                                   .Where(r => r.HRUserId == userId &&
                                               r.Candidate.ProductOwnerId == productOwnerId &&
-                                              (string.IsNullOrEmpty(r.OnboardedIndicator) || r.OnboardedIndicator == "N"))
+                                              (string.IsNullOrEmpty(r.OnboardedIndicator) || r.OnboardedIndicator == "N")
+                                              && r.InactiveDate == null)
                                   .Select(r => new
                                   {
                                       EnrollmentId = r.EnrollmentId,
@@ -190,7 +191,8 @@ namespace Onboard.Web.UI.Services
                                       CreatedDate = r.CreatedDate,
                                       ModifiedDate = r.ModifiedDate,
                                       ModifiedBy = r.ModifiedUser,
-                                      AccountManager = r.ProtfolioManagerId
+                                      AccountManager = r.ProtfolioManagerId,
+                                      InactiveDate = r.InactiveDate
                                   }).ToList();
 
             return enrollments.Select(r => new CandidateViewModel
@@ -202,7 +204,8 @@ namespace Onboard.Web.UI.Services
                 CreatedDate = r.CreatedDate == null ? new DateTime() : (DateTime)r.CreatedDate,
                 ModifiedDate = r.ModifiedDate == null ? new DateTime() : (DateTime)r.ModifiedDate,
                 ModifiedBy = r.ModifiedBy,
-                AccountManager = r.AccountManager == null ? "" : r.AccountManager.ToString()
+                AccountManager = r.AccountManager == null ? "" : r.AccountManager.ToString(),
+                InactiveDate = r.InactiveDate == null ? new DateTime() : (DateTime)r.InactiveDate
             }).ToList();
         }
 
@@ -222,7 +225,8 @@ namespace Onboard.Web.UI.Services
                                       VendorName = r.Vendor.CompanyName,
                                       AccountManager = r.ProtfolioManagerId,
                                       OnboardedIndicator = r.OnboardedIndicator,
-                                      ClientContact = r.ClientContact.Name
+                                      ClientContact = r.ClientContact.Name,
+                                      InactiveDate = r.InactiveDate
                                   }).FirstOrDefault();
 
             return new CandidateDetailsViewModel
@@ -237,6 +241,7 @@ namespace Onboard.Web.UI.Services
                 EndClient = enrollment.EndClient == null ? "" : enrollment.EndClient,
                 ClientContact = enrollment.ClientContact == null ? "" : enrollment.ClientContact,
                 CreatedDate = enrollment.CreatedDate == null ? new DateTime() : (DateTime)enrollment.CreatedDate,
+                Inactive = enrollment.InactiveDate != null ,
             };
         }
 
@@ -559,6 +564,18 @@ namespace Onboard.Web.UI.Services
             {
                 enrollment.OnboardedDate = DateTime.Now;
                 enrollment.OnboardedIndicator = "Y";
+                enrollment.CurrentUser = currentUser;
+            }
+
+            this._context.SaveChanges();
+        }
+
+        public void AbortEnrollment(int enrollmentId, int hrUserId, string currentUser)
+        {
+            var enrollment = this._context.Enrollment.Where(r => r.EnrollmentId == enrollmentId).FirstOrDefault();
+            if (enrollment != null)
+            {
+                enrollment.InactiveDate = DateTime.Now;
                 enrollment.CurrentUser = currentUser;
             }
 

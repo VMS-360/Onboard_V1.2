@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Onboard.Web.UI.Models.DatabaseViewModels;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Mail;
 
 namespace Onboard.Web.UI.Controllers
 {
@@ -458,7 +459,7 @@ namespace Onboard.Web.UI.Controllers
                 try
                 {
                     this._candidateService.AssignEnrollment(Convert.ToInt32(enrollmentId), loggedUser.Id, User.Identity.Name);
-
+                    //this.SendAssignmentAcceptedEmail(loggedUser.Email ,enrollmentId);
                     // Update Grid
                     IList<CandidateViewModel> pendingCandidates = this._candidateService.GetPendingCandidates(loggedUser.ProductOwnerId);
                     //mygrid
@@ -493,6 +494,36 @@ namespace Onboard.Web.UI.Controllers
             {
                 return this.GetJsonResult(false, "Validation failed", this.ModelErrors());
             }
+        }
+
+        private void SendAssignmentAcceptedEmail(string from, string enrollmentId)
+        {
+            OnboardingDetails enrollment = this._enrollmentService.GetEditCandidateDetails(Convert.ToInt32(enrollmentId));
+            var hrUser = this._userManager.Users.Where(r => r.Id == enrollment.HrUserId).FirstOrDefault();
+            if (from != null && !string.IsNullOrEmpty(hrUser.Email))
+            {
+                string toMail = hrUser.Email;
+                this.SendMail(from, toMail, "Work started ", "Paper work for " + enrollment.CandidateFullName + " has been started.");
+            }
+        }
+
+        private void SendMail(string mailFrom, string mailTo, string subject, string body)
+        {
+            // Command line argument must the the SMTP host.
+            SmtpClient client = new SmtpClient("smtp.office365.com");
+            MailAddress from = new MailAddress(mailFrom);
+            MailAddress to = new MailAddress(mailTo);
+            // Specify the message content.
+            MailMessage message = new MailMessage(from, to);
+            message.Body = body;
+            // Include some non-ASCII characters in body and subject.
+            string someArrows = new string(new char[] { '\u2190', '\u2191', '\u2192', '\u2193' });
+            message.Body += Environment.NewLine + someArrows;
+            message.BodyEncoding = System.Text.Encoding.UTF8;
+            message.Subject = subject + someArrows;
+            message.SubjectEncoding = System.Text.Encoding.UTF8;
+           
+            client.Send(message);
         }
 
         public IActionResult PrepareAddEndClient(int clientId)
@@ -686,6 +717,37 @@ namespace Onboard.Web.UI.Controllers
 
                     // Update Grid
                     IList<CandidateViewModel> pendingCandidates = this._candidateService.GetPendingCandidates(loggedUser.ProductOwnerId);
+
+                    return this.Json(
+                            new
+                            {
+                                Success = true,
+                                Message = "Saved Successfully.",
+                                Html = string.Empty
+                            });
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("HRUser", e.Message);
+                    return this.GetJsonResult(false, "Validation failed", this.ModelErrors());
+                }
+            }
+            else
+            {
+                List<string> error = new List<string>();
+                error.Add("Enrollment Id can't be empty");
+                return this.GetJsonResult(false, "Validation failed", error);
+            }
+        }
+
+        public IActionResult AbortCandidate(string enrollmentId)
+        {
+            var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
+            if (!string.IsNullOrEmpty(enrollmentId))
+            {
+                try
+                {
+                    this._candidateService.AbortEnrollment(Convert.ToInt32(enrollmentId), loggedUser.Id, User.Identity.Name);
 
                     return this.Json(
                             new
