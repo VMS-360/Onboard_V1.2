@@ -35,10 +35,55 @@ namespace Onboard.Web.UI.Controllers
 
         public IActionResult Index()
         {
-            List<List<string>> model = new List<List<string>>();
-            List<string> template = new List<string>();
+            CandidateSpecViewModel model = new CandidateSpecViewModel();
+            var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
 
-            return View();
+            List<List<string>> onboardedModel = new List<List<string>>();
+            List<DateTime> template = new List<DateTime>();
+            List<string> years = new List<string>();
+            years.Add("Name");
+            template.Add(new DateTime());
+        
+            for (int i = 0; i < 12; i++)
+            {
+                var currentDate = DateTime.Now.AddMonths(i * -1);
+                years.Add(this.ExtractDateString(currentDate));
+                template.Add(new DateTime(currentDate.Year, currentDate.Month, 1));
+            }
+
+            var hrUsers = this._userService.GetHRUsers(loggedUser.ProductOwnerId);
+            List<string> hrs = new List<string>();
+            hrs.Add("Name");
+            for (int i = 12; i > 0; i--)
+            {
+                var curDate = template[i];
+                hrs.Add(curDate.ToShortDateString());
+            }
+
+            onboardedModel.Add(hrs);
+            foreach (var hrUser in hrUsers)
+            {
+                var onboarded = this._candidateService.GetOnboardCandidates(Convert.ToInt32(hrUser.Value), loggedUser.ProductOwnerId);
+                hrs = new List<string>();
+
+                var theUser = this._userManager.Users.Where(r => r.UserName == hrUser.Text).FirstOrDefault();
+                if (theUser != null)
+                {
+                    hrs.Add(theUser.FirstName + " " + theUser.LastName);
+                }
+
+                for (int i = 12; i > 0; i--)
+                {
+                    int count = onboarded.Where(r => template[i] <= r.OnboardedDate && r.OnboardedDate< template[i].AddMonths(1)).Count();
+                    hrs.Add(count.ToString());
+                }
+
+                onboardedModel.Add(hrs);
+            }
+
+            model.Onboarded = onboardedModel;
+
+            return View(model);
         }
 
         public ActionResult PrepareGraph()
@@ -207,6 +252,11 @@ namespace Onboard.Web.UI.Controllers
             {
                 return this.GetJsonResult(false, "Validation failed", this.ModelErrors());
             }
+        }
+
+        private string ExtractDateString(DateTime date)
+        {
+            return date.ToString("MMM yy");
         }
     }
 }
