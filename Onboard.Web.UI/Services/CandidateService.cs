@@ -613,5 +613,85 @@ namespace Onboard.Web.UI.Services
                        .Select(r => r.HRUserId)
                        .ToList();
         }
+
+        public string GetVendorName(int vendorId)
+        {
+            string vendorName = string.Empty;
+            if (vendorId != 0)
+            {
+                var vendor = this._context.Vendor.Where(r => r.VendorId == vendorId).FirstOrDefault();
+                if (vendor != null)
+                {
+                    vendorName = vendor.CompanyName;
+                }
+            }
+
+            return vendorName;
+        }
+
+        public string GetClientName(int clientId)
+        {
+            string vendorName = string.Empty;
+            if (clientId != 0)
+            {
+                var vendor = this._context.Client.Where(r => r.ClientId == clientId).FirstOrDefault();
+                if (vendor != null)
+                {
+                    vendorName = vendor.CompanyName;
+                }
+            }
+
+            return vendorName;
+        }
+
+        public IList<CandidateViewModel> GetAllPendingCandidates(int productOwnerId)
+        {
+            var enrollments = this._context
+                                  .Enrollment
+                                  .Where(r => r.Candidate.ProductOwnerId == productOwnerId &&
+                                              (string.IsNullOrEmpty(r.OnboardedIndicator) || r.OnboardedIndicator == "N")
+                                              && r.InactiveDate == null)
+                                  .Select(r => new
+                                  {
+                                      HRUserId = r.HRUserId,
+                                      EnrollmentId = r.EnrollmentId,
+                                      CandidateId = r.Candidate.CandidateId,
+                                      FirstName = r.Candidate.FirstName,
+                                      LastName = r.Candidate.LastName,
+                                      ClientName = r.Client.CompanyName,
+                                      BillingType = r.TaxStatusCode,
+                                      CreatedDate = r.CreatedDate,
+                                      ModifiedDate = r.ModifiedDate,
+                                      ModifiedBy = r.ModifiedUser,
+                                      VendorName = r.Vendor.CompanyName,
+                                      AssignedTo = r.HRUserId,
+                                      AccountManager = r.ProtfolioManagerId,
+                                      VendorId = r.VendorId,
+                                      ClientId = r.ClientId,
+                                      TaxStatus = r.TaxStatus.Description
+                                  }).ToList();
+
+            List<CandidateViewModel> returnList = enrollments.Select(r => new CandidateViewModel
+            {
+                HRUserId = r.HRUserId == null ? 0 : (int) r.HRUserId,
+                EnrollmentId = r.EnrollmentId,
+                CandidateId = r.CandidateId,
+                FirstName = r.FirstName,
+                LastName = r.LastName,
+                ClientName = r.ClientName == null ? "" : r.ClientName,
+                BillingType = r.BillingType,
+                CreatedDate = r.CreatedDate == null ? new DateTime() : (DateTime)r.CreatedDate,
+                ModifiedDate = r.ModifiedDate == null ? new DateTime() : (DateTime)r.ModifiedDate,
+                ModifiedBy = r.ModifiedBy,
+                VendorName = r.VendorName == null ? "" : r.VendorName,
+                AssignedTo = r.AssignedTo == null ? "" : r.AssignedTo.ToString(),
+                AccountManager = r.AccountManager == null ? "" : r.AccountManager.ToString(),
+                ClientId = r.ClientId == null ? 0 : (int)r.ClientId,
+                VendorId = r.VendorId == null ? 0 : (int)r.VendorId,
+                TaxStatusString = r.TaxStatus
+            }).ToList();
+
+            return returnList;
+        }
     }
 }

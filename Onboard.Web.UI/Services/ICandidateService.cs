@@ -20,5 +20,8 @@ namespace Onboard.Web.UI.Services
         IList<CandidateViewModel> GetDeclinedCandidates(int productOwnerId);
         IList<int?> GetHRPeningEnrollmentCounts(int productOwnerId);
         IList<int?> GetHROnboardedEnrollmentCounts(int productOwnerId);
+        IList<CandidateViewModel> GetAllPendingCandidates(int productOwnerId);
+        string GetClientName(int clientId);
+        string GetVendorName(int vendorId);
     }
 }

@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Identity;
 using Onboard.Web.UI.Models;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Onboard.Web.UI.Services;
+using Kendo.Mvc.UI;
+using Onboard.Web.UI.Models.HRViewModels;
+using Kendo.Mvc.Extensions;
 
 namespace Onboard.Web.UI.Controllers
 {
@@ -32,6 +35,9 @@ namespace Onboard.Web.UI.Controllers
 
         public IActionResult Index()
         {
+            List<List<string>> model = new List<List<string>>();
+            List<string> template = new List<string>();
+
             return View();
         }
 
@@ -87,6 +93,120 @@ namespace Onboard.Web.UI.Controllers
                    HREmployees = hrEmployees.ToArray(),
                    Candidates = candidates.ToArray()
                });
+        }
+
+        public ActionResult GetAllEmployeesList([DataSourceRequest] DataSourceRequest request)
+        {
+            var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
+            var hrUsers = this._userService.GetHRUsers(loggedUser.ProductOwnerId);
+            var allCandidates = this._candidateService.GetAllPendingCandidates(loggedUser.ProductOwnerId);
+
+            List<AllEmployeesViewModel> employees = new List<AllEmployeesViewModel>();
+
+            AllEmployeesViewModel theEmployee;
+            foreach (var hrUser in hrUsers)
+            {
+                theEmployee = new AllEmployeesViewModel();
+
+                var theUser = this._userManager.Users.Where(r => r.UserName == hrUser.Text).FirstOrDefault();
+                if (theUser != null)
+                {
+                    theEmployee.EmployeeName = theUser.FirstName + " " + theUser.LastName;
+                }
+
+                var candidates = allCandidates.Where(r => r.HRUserId == Convert.ToInt32(hrUser.Value));
+                foreach(var candidate in candidates)
+                {
+                    theEmployee.EnrollmentId = candidate.EnrollmentId;
+                    theEmployee.CandidateName = candidate.ConsultantName;
+                    theEmployee.ClietName = candidate.ClientName;
+                    theEmployee.TaxStatus = candidate.TaxStatusString;
+                    theEmployee.LastUpdated =  candidate.ModifiedDate == null ? candidate.CreatedDate : candidate.ModifiedDate;
+                    theEmployee.EnrollmentId = candidate.EnrollmentId;
+                }
+
+                if (theEmployee.EnrollmentId != 0)
+                {
+                    employees.Add(theEmployee);
+                }
+            }
+
+            return Json(employees.ToDataSourceResult(request));
+        }
+
+        public IActionResult PrepareCandiateDetails(string enrollmentId)
+        {
+            CandidateDetailsViewModel viewModel = new CandidateDetailsViewModel();
+            if (enrollmentId != null && enrollmentId.Length > 0)
+            {
+                viewModel = this._candidateService.GetCandateDetails(Convert.ToInt32(enrollmentId));
+            }
+
+            return this.Json(
+                            new
+                            {
+                                Success = true,
+                                Message = string.Empty,
+                                Html = this.RenderPartialViewToString("_CandidateDetails", viewModel)
+                            });
+        }
+
+        public IActionResult PrepareEnrollmentAssign(string enrollmentId)
+        {
+            AssignEnrollemntViewModel model = new AssignEnrollemntViewModel();
+            var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
+            model.EnrollmentId = enrollmentId;
+            model.HRUsers = this._userService.GetHRUsers(loggedUser.ProductOwnerId);
+
+            foreach(var theUser in model.HRUsers)
+            {
+                var user = this._userManager.Users.Where(r => r.Id ==  Convert.ToInt32(theUser.Value)).FirstOrDefault();
+
+                theUser.Text = user.FirstName + " " + user.LastName;
+            }
+
+            return this.Json(
+                            new
+                            {
+                                Success = true,
+                                Message = string.Empty,
+                                Html = this.RenderPartialViewToString("_Assign", model)
+                            });
+        }
+
+        public IActionResult EnrollmentAssign(AssignEnrollemntViewModel model)
+        {
+            var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
+            if (model != null && ModelState.IsValid)
+            {
+                try
+                {
+                    this._candidateService.AssignEnrollment(Convert.ToInt32(model.EnrollmentId), Convert.ToInt32(model.HRUser), User.Identity.Name);
+
+                    return this.Json(
+                               new
+                               {
+                                   Success = true,
+                                   Message = "Saved Successfully."
+                               });
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("HRUser", e.Message);
+                }
+
+                return this.Json(
+                            new
+                            {
+                                Success = true,
+                                Message = string.Empty,
+                                Html = this.RenderPartialViewToString("_Assign", model)
+                            });
+            }
+            else
+            {
+                return this.GetJsonResult(false, "Validation failed", this.ModelErrors());
+            }
         }
     }
 }

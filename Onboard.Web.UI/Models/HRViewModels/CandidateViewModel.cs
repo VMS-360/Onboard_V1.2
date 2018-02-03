@@ -14,6 +14,8 @@ namespace Onboard.Web.UI.Models.HRViewModels
 
         public int CandidateId { get; set; }
 
+        public int HRUserId { get; set; }
+
         [DataType("Text")]
         [DisplayName("Candidate Name")]
         public string FirstName { get; set; }
@@ -173,6 +175,8 @@ namespace Onboard.Web.UI.Models.HRViewModels
         }
 
         public string AssignedTo { get; internal set; }
+
+        public string TaxStatusString { get; internal set; }
 
         public string AccountManager { get; internal set; }
 

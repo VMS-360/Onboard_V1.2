@@ -4,83 +4,87 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
-        @model Onboard.Web.UI.Models.HRViewModels.ManagementViewModel
-        @{
+@model Onboard.Web.UI.Models.HRViewModels.ManagementViewModel
+@{
             ViewData["Title"] = "Onbaord - HR Management";
-        }
-        <style>
-            .page-heading {
-                padding: 0 10px 0px 10px !important;
-                margin-bottom: 10px;
-            }
+}
+<style>
+    .page-heading {
+        padding: 0 10px 0px 10px !important;
+        margin-bottom: 10px;
+    }
 
-            .pad-top {
-                padding-top: 15px;
-            }
-        </style>
+    .pad-top {
+        padding-top: 15px;
+    }
+</style>
 
-        <link href="~/lib/steps/jquery.steps.css" rel="stylesheet" />
-        <div class="row wrapper border-bottom white-bg page-heading">
-            <div class="col-sm-8">
-                <h2>HR Management</h2>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="tabs-container">
-                    <ul class="nav nav-tabs">
-                        <li class="active">
-                            <a data-toggle="tab" href="#tab-pend-candidates">
-                                All Pending HR Candidates
-                            </a>
-                        </li>
-                        <li>
-                            <a data-toggle="tab" href="#tab-pend-reports">
-                                HR Pending Reports
-                            </a>
-                        </li>
-                        <li>
-                            <a data-toggle="tab" href="#tab-complete-reports">
-                                HR Completed Reports
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                       
-                            <div id="tab-pend-candidates" class="tab-pane active">
-                                <div class="panel-body" id="divPendCandiates">
-                                    @Html.Partial("_AllPending", Model)
-                                </div>
-                            </div>
-                      
-                            <div id="tab-pend-reports" class="tab-pane">
-                                <div class="panel-body" id="divPendingReports">
-                                    @Html.Partial("_PendingReports", Model)
-                                </div>
-                            </div>
-                        <div id="tab-complete-reports" class="tab-pane">
-                            <div class="panel-body" id="divCompletedReports">
-                                @Html.Partial("_CompletedReports", Model)
-                            </div>
-                        </div>
+<link href="~/lib/steps/jquery.steps.css" rel="stylesheet" />
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-sm-8">
+        <h2>HR Management</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="tabs-container">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a data-toggle="tab" href="#tab-pend-candidates">
+                        All Pending HR Candidates
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#tab-pend-reports">
+                        HR Pending Reports
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#tab-complete-reports">
+                        HR Completed Reports
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+
+                <div id="tab-pend-candidates" class="tab-pane active">
+                    <div class="panel-body" id="divPendCandiates">
+                        @Html.Partial("_AllEmpList", Model)
+                    </div>
+                </div>
+
+                <div id="tab-pend-reports" class="tab-pane">
+                    <div class="panel-body" id="divPendingReports">
+                        @Html.Partial("_PendingReports", Model)
+                    </div>
+                </div>
+                <div id="tab-complete-reports" class="tab-pane">
+                    <div class="panel-body" id="divCompletedReports">
+                        @Html.Partial("_CompletedReports", Model)
                     </div>
                 </div>
             </div>
         </div>
-        @section scripts
+    </div>
+</div>
+<div class="modal inmodal fade" id="CandidateDetails" tabindex="-1" role="dialog" aria-hidden="true">
+</div>
+<div class="modal inmodal" id="model-assign" tabindex="-1" role="dialog" aria-hidden="true">
+</div>
+@section scripts
         {
-            <script src="~/lib/steps/jquery.steps.min.js"></script>
-            <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
-            <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
-            <environment names="Development">
-                <script src="~/lib/chartJs/Chart.min.js"></script>
-                <script src="~/lib/peity/jquery.peity.js"></script>
-            </environment>
-            <environment names="Staging,Production">
-                <script src="~/lib/chartJs/Chart.min.js"></script>
-                <script src="~/lib/peity/jquery.peity.min.js"></script>
-            </environment>
-            <script>
+    <script src="~/lib/steps/jquery.steps.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    <environment names="Development">
+        <script src="~/lib/chartJs/Chart.min.js"></script>
+        <script src="~/lib/peity/jquery.peity.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/lib/chartJs/Chart.min.js"></script>
+        <script src="~/lib/peity/jquery.peity.min.js"></script>
+    </environment>
+    <script>
                 $(document).ready(function () {
                     //$('#header-strip-addon').append('<span class="input-group-addon"><h4> &nbsp;&nbsp; Human Resources</h4></span >');
                     //$('#header-strip-addon').append('<span class="input-group-addon"><button id= "btn-add-candidate" class="btn btn-outline btn-primary" type= "button" action="candidate-add"><i class="fa fa-user-plus"></i> Add Candidate</button></span >');
@@ -156,6 +160,103 @@
                             }
                         }
                     });
-                });
-            </script>
+                }).on('click', 'a[action="view-candidate"]', function () {
+                    var enrollId = $(this).attr('enrollment-id');
+            $.ajax({
+                type: "GET",
+                cache: false,
+                url: '@Url.Action("PrepareCandiateDetails", "HRManagement")',
+                data: { 'enrollmentId': enrollId },
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
+                    }
+                    else {
+                        if (result.Success) {
+                            $('#CandidateDetails').html(result.Html);
+                            $('#CandidateDetails').modal({ backdrop: 'static', keyboard: false });
+                            //$('#CandidateDetails').modal('toggle');
+                        }
+                    }
+                }
+                    })
+
+                return false;
+                    }).on('click', 'a[action="re-assign"]', function () {
+                        var userId = $(this).attr('enrollment-id');
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("PrepareEnrollmentAssign", "HRManagement")',
+                data: { 'enrollmentId': userId },
+                success: function (result, textStatus, xhr) {
+                    if (xhr.status === 302) {
+                        alert("Your session has expired.  Please log in.");
+                    }
+                    else {
+                        if (result.Success) {
+                            $('#model-assign').html(result.Html);
+                            $('#model-assign').modal({ backdrop: 'static', keyboard: false });
+                            //$('#model-assign').modal('toggle');
+                        }
+                    }
+                }
+            });
+
+            return false;
+        }).on('click', 'button[action="assign-enrollment-save"]', function () {
+                $("#form-enrollment-assign").find(".validation-summary-errors")
+                .addClass("validation-summary-valid")
+                .removeClass("validation-summary-errors");
+
+                var validationInfo = $("#form-enrollment-assign").data("unobtrusiveValidation");
+                if (!validationInfo || !validationInfo.validate || validationInfo.validate()) {
+                    var url = '@Url.Action("EnrollmentAssign", "HRManagement")';
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: serializeRowData($("#form-enrollment-assign").serialize()),
+                        error: function () {
+                            alert("An error occurred processing the request.");
+                        },
+                        success: function (result, textStatus, xhr) {
+                            if (xhr.status === 302) {
+                                alert("Your session has expired.  Please log in.");
+                            }
+                            else {
+                                if (result.Success) {
+                                    $('#AllEmpGrid').data('kendoGrid').dataSource.read();
+                                    $('#model-assign').modal('toggle');
+                                }
+                                else {
+                                    $('#model-assign').html(result.Html);
+                                }
+                            }
+                        }
+                    });
+                }
+
+                return false;
+            });
+
+        function serializeRowData(element) {
+            var sdata = element;
+            var $data = element.split("&");
+
+            $.each($data, function (e) {
+                if ($data[e].split("=")[0] === "Internalx") {
+                    var internal = $data[e].split("=")[1];
+                    sdata += "&IsInternal=";
+                    if (internal == "I") {
+                        sdata += "true";
+                    }
+                    else {
+                        sdata += "false";
+                    }
+                }
+            });
+
+            return sdata;
         }
+    </script>
+}

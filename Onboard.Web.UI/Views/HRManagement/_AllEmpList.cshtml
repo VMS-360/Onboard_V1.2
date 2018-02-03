@@ -1,0 +1,48 @@
+<style>
+    #AllEmpGrid {
+        height: 873px !important;
+    }
+
+        #AllEmpGrid .k-grid,
+        .k-grid-header-wrap,
+        .k-grid-header th,
+        .k-grid-content > table > tbody > tr > td {
+            border: 0;
+        }
+</style>
+
+@(Html.Kendo().Grid<Onboard.Web.UI.Models.HRViewModels.AllEmployeesViewModel>()
+    .Name("AllEmpGrid")
+    .Columns(columns =>
+    {
+        columns.Bound(p => p.CandidateName).Width(100);
+        columns.Bound(p => p.ClietName).Width(100);
+        columns.Bound(p => p.TaxStatus).Width(70);
+        columns.Bound(p => p.LastUpdatedString).Width(70);
+        columns.Bound(p => p.EmployeeName).Hidden(true).ClientGroupHeaderTemplate("#= value # (Count: #= count#)");
+        columns.Bound(p => p.EnrollmentId).Width(120).Title(" ").ClientTemplate("<a href='' class='btn btn-white btn-sm' action='view-candidate' title='View Candidate' enrollment-id='#=EnrollmentId#'>" +
+            "<i class='fa fa-folder'></i> View</a>" +
+            "<a href='' class='btn btn-white btn-sm' action='re-assign' enrollment-id='#=EnrollmentId#'>" +
+            "&nbsp;&nbsp;<i class='fa fa-arrow-right'></i> Re-Assign" +
+            "</a>").HtmlAttributes(new { style = "text-align: left" });
+    })
+    .Sortable()
+    .Scrollable()
+    .Resizable(resize => resize.Columns(true))
+    .Reorderable(reorderable => reorderable.Columns(true))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .Batch(true)
+        .ServerOperation(false)
+        .Aggregates(aggregates =>
+        {
+            aggregates.Add(p => p.EmployeeName).Count();
+        })
+        .Group(g => g.Add(p => p.EmployeeName))
+        .Model(model =>
+        {
+            model.Id(p => p.EnrollmentId);
+        })
+            .Read(read => read.Action("GetAllEmployeesList", "HRManagement"))
+    )
+)
