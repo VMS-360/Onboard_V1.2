@@ -693,5 +693,27 @@ namespace Onboard.Web.UI.Services
 
             return returnList;
         }
+
+        public IList<CandidateViewModel> GetAllAssignedCandidates(int productOwnerId)
+        {
+            var enrollments = this._context
+                                  .Enrollment
+                                  .Where(r => r.Candidate.ProductOwnerId == productOwnerId &&
+                                              (string.IsNullOrEmpty(r.OnboardedIndicator) || r.OnboardedIndicator == "N")
+                                              && r.InactiveDate == null)
+                                  .Select(r => new
+                                  {
+                                      AssignedTo = r.HRUserId,
+                                      CreatedDate = r.CreatedDate,
+                                  }).ToList();
+
+            List<CandidateViewModel> returnList = enrollments.Select(r => new CandidateViewModel
+            {
+                CreatedDate = r.CreatedDate == null ? new DateTime() : (DateTime)r.CreatedDate,
+                AssignedTo = r.AssignedTo == null ? "" : r.AssignedTo.ToString()
+            }).ToList();
+
+            return returnList;
+        }
     }
 }

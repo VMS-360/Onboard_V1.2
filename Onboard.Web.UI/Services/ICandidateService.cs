@@ -23,5 +23,6 @@ namespace Onboard.Web.UI.Services
         IList<CandidateViewModel> GetAllPendingCandidates(int productOwnerId);
         string GetClientName(int clientId);
         string GetVendorName(int vendorId);
+        IList<CandidateViewModel> GetAllAssignedCandidates(int productOwnerId);
     }
 }

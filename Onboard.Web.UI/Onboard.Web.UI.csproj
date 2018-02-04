@@ -35,7 +35,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Executive\" />
-    <Folder Include="Views\HRManagement\" />
     <Folder Include="Views\PortfolioManager\" />
     <Folder Include="Views\Shared\EditorTemplates\" />
     <Folder Include="Views\Shared\EditorTemplates\" />

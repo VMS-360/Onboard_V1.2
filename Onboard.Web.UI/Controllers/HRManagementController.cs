@@ -37,51 +37,8 @@ namespace Onboard.Web.UI.Controllers
         {
             CandidateSpecViewModel model = new CandidateSpecViewModel();
             var loggedUser = this._userManager.Users.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
-
-            List<List<string>> onboardedModel = new List<List<string>>();
-            List<DateTime> template = new List<DateTime>();
-            List<string> years = new List<string>();
-            years.Add("Name");
-            template.Add(new DateTime());
-        
-            for (int i = 0; i < 12; i++)
-            {
-                var currentDate = DateTime.Now.AddMonths(i * -1);
-                years.Add(this.ExtractDateString(currentDate));
-                template.Add(new DateTime(currentDate.Year, currentDate.Month, 1));
-            }
-
-            var hrUsers = this._userService.GetHRUsers(loggedUser.ProductOwnerId);
-            List<string> hrs = new List<string>();
-            hrs.Add("Name");
-            for (int i = 12; i > 0; i--)
-            {
-                var curDate = template[i];
-                hrs.Add(curDate.ToShortDateString());
-            }
-
-            onboardedModel.Add(hrs);
-            foreach (var hrUser in hrUsers)
-            {
-                var onboarded = this._candidateService.GetOnboardCandidates(Convert.ToInt32(hrUser.Value), loggedUser.ProductOwnerId);
-                hrs = new List<string>();
-
-                var theUser = this._userManager.Users.Where(r => r.UserName == hrUser.Text).FirstOrDefault();
-                if (theUser != null)
-                {
-                    hrs.Add(theUser.FirstName + " " + theUser.LastName);
-                }
-
-                for (int i = 12; i > 0; i--)
-                {
-                    int count = onboarded.Where(r => template[i] <= r.OnboardedDate && r.OnboardedDate< template[i].AddMonths(1)).Count();
-                    hrs.Add(count.ToString());
-                }
-
-                onboardedModel.Add(hrs);
-            }
-
-            model.Onboarded = onboardedModel;
+            model.Onboarded = this.GetCompletedTableData(loggedUser.ProductOwnerId);
+            model.Pending = this.GetPendingTableData(loggedUser.ProductOwnerId);
 
             return View(model);
         }
@@ -257,6 +214,94 @@ namespace Onboard.Web.UI.Controllers
         private string ExtractDateString(DateTime date)
         {
             return date.ToString("MMM yy");
+        }
+
+        private List<List<string>> GetPendingTableData(int productOwnerId)
+        {
+            List<List<string>> onboardedModel = new List<List<string>>();
+            List<DateTime> template = new List<DateTime>();
+            List<string> dates = new List<string>();
+            dates.Add("Assigned to");
+            var pending = this._candidateService.GetAllAssignedCandidates(productOwnerId);
+
+            foreach (string createdDate in pending.Select(r => r.CreatedDate.ToShortDateString()).Distinct())
+            {
+                dates.Add(createdDate);
+                template.Add(Convert.ToDateTime(createdDate));
+            }
+
+            var hrUsers = this._userService.GetHRUsers(productOwnerId);
+            onboardedModel.Add(dates);
+
+            List<string> hrs;
+            foreach (var hrUser in hrUsers)
+            {
+                hrs = new List<string>();
+
+                var theUser = this._userManager.Users.Where(r => r.UserName == hrUser.Text).FirstOrDefault();
+                if (theUser != null)
+                {
+                    hrs.Add(theUser.FirstName + " " + theUser.LastName);
+                }
+
+                foreach(DateTime hrDate in template)
+                {
+                    int count = pending.Where(r =>r.CreatedDate.ToShortDateString() == hrDate.ToShortDateString() && r.AssignedTo == hrUser.Value).Count();
+                    hrs.Add(count.ToString());
+                }
+
+                onboardedModel.Add(hrs);
+            }
+
+            return onboardedModel;
+        }
+
+        private List<List<string>> GetCompletedTableData(int productOwnerId)
+        {
+            List<List<string>> onboardedModel = new List<List<string>>();
+            List<DateTime> template = new List<DateTime>();
+            List<string> years = new List<string>();
+            years.Add("Name");
+            template.Add(new DateTime());
+
+            for (int i = 0; i < 12; i++)
+            {
+                var currentDate = DateTime.Now.AddMonths(i * -1);
+                years.Add(this.ExtractDateString(currentDate));
+                template.Add(new DateTime(currentDate.Year, currentDate.Month, 1));
+            }
+
+            var hrUsers = this._userService.GetHRUsers(productOwnerId);
+            List<string> hrs = new List<string>();
+            hrs.Add("Assigned to");
+            for (int i = 12; i > 0; i--)
+            {
+                var curDate = template[i];
+                hrs.Add(curDate.ToShortDateString());
+            }
+
+            onboardedModel.Add(hrs);
+            foreach (var hrUser in hrUsers)
+            {
+                var onboarded = this._candidateService.GetOnboardCandidates(Convert.ToInt32(hrUser.Value), productOwnerId);
+                hrs = new List<string>();
+
+                var theUser = this._userManager.Users.Where(r => r.UserName == hrUser.Text).FirstOrDefault();
+                if (theUser != null)
+                {
+                    hrs.Add(theUser.FirstName + " " + theUser.LastName);
+                }
+
+                for (int i = 12; i > 0; i--)
+                {
+                    int count = onboarded.Where(r => template[i] <= r.OnboardedDate && r.OnboardedDate < template[i].AddMonths(1)).Count();
+                    hrs.Add(count.ToString());
+                }
+
+                onboardedModel.Add(hrs);
+            }
+
+            return onboardedModel;
         }
     }
 }
