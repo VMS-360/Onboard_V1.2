@@ -1,0 +1,16 @@
+﻿@model Onboard.Web.UI.Models.HRViewModels.ChecklistViewModel
+<tr id="@Model.Id">
+    <td class="project-title">
+        @Model.Text
+    </td>
+    <td class="project-title">
+        @Model.CommentType
+    </td>
+    <td class="project-title">
+        @Model.IsActive
+    </td>
+    <td class="project-title">
+        <a href="#" action="edit-vendor-tasklist" class="btn btn-white btn-xs">Edit</a>
+        <a href="#" action="delete-vendor-tasklist" class="btn btn-white btn-xs">Delete</a>
+    </td>
+</tr>

@@ -16,5 +16,7 @@ namespace Onboard.Web.UI.Services
         IList<EndClientsViewModel> GetEndClients(int productOwnerId);
         EndClientsViewModel GetEndClientDetails(int ClientId);
         bool AddEndClient(int productOwnerId, EndClientsViewModel client);
+        List<ChecklistViewModel> GetVendorChecklist(int vendorId);
+        void UpdateVendorDetails(VendorsViewModel model);
     }
 }

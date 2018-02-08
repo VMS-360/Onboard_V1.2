@@ -115,6 +115,60 @@ namespace Onboard.Web.UI.Services
 
             vendor.ConsultantsCount = this._context.Enrollment.Where(r => r.VendorId == vendorId).Select(r => r.CandidateId).Distinct().Count();
 
+            //Vendor Contatct
+            if (vendorId != 0)
+            {
+                var contact = this._context.Vendor_Contact.Where(r => r.VendorId == vendorId && r.IsSignatory != "Y").Select
+                    (r => new
+                    {
+                        Id = r.VendorContactId,
+                        ContactFirstName = r.Name,
+                        JobTitle = r.JobTitle,
+                        ContactEmail = r.Email,
+                        Phone = r.Phone
+                    }).ToList();
+                if (contact == null)
+                {
+                    contact = this._context.Vendor_Contact.Where(r => r.VendorId == vendorId && r.IsSignatory == "Y").Select
+                    (r => new
+                    {
+                        Id = r.VendorContactId,
+                        ContactFirstName = r.Name,
+                        JobTitle = r.JobTitle,
+                        ContactEmail = r.Email,
+                        Phone = r.Phone
+                    }).ToList();
+                }
+
+                foreach (var theContact in contact)
+                {
+                    vendor.ContactId = theContact.Id;
+                    vendor.ContactName = theContact.ContactFirstName;
+                    vendor.ContactTitle = theContact.JobTitle;
+                    vendor.ContactEmail = theContact.ContactEmail;
+                    vendor.ContactPhone = theContact.Phone;
+                }
+
+                var signatory = this._context.Vendor_Contact.Where(r => r.VendorId == vendorId && r.IsSignatory == "Y").Select
+                    (r => new
+                    {
+                        Id = r.VendorContactId,
+                        ContactFirstName = r.Name,
+                        JobTitle = r.JobTitle,
+                        ContactEmail = r.Email,
+                        Phone = r.Phone
+                    }).ToList();
+
+                foreach (var theContact in signatory)
+                {
+                    vendor.SignatoryId = theContact.Id;
+                    vendor.SignatoryName = theContact.ContactFirstName;
+                    vendor.SignatoryTitle = theContact.JobTitle;
+                    vendor.SignatoryEmail = theContact.ContactEmail;
+                    vendor.SignatoryPhone = theContact.Phone;
+                }
+            }
+
             return vendor;
         }
 
@@ -253,6 +307,65 @@ namespace Onboard.Web.UI.Services
             }
 
             return success;
+        }
+
+        public void UpdateVendorDetails(VendorsViewModel model)
+        {
+            Vendor vendor = this._context
+                                .Vendor                                
+                                .Where(r => r.VendorId == model.VendorId)
+                                .FirstOrDefault();
+
+            if (vendor != null)
+            {
+                vendor.CompanyName = model.CompanyName;
+                vendor.AddressLine1 = model.AddressLine1;
+                vendor.City = model.City;
+                vendor.State = model.State;
+                vendor.Zip = model.Zip;
+            }
+
+            VendorContact contact = this._context
+                                .Vendor_Contact
+                                .Where(r => r.VendorContactId == model.ContactId)
+                                .FirstOrDefault();
+
+            if (contact != null)
+            {
+                contact.Name = model.ContactName;
+                contact.JobTitle = model.ContactTitle;
+                contact.Email = model.ContactEmail;
+            }
+
+            VendorContact signatory = this._context
+                                .Vendor_Contact
+                                .Where(r => r.VendorContactId == model.SignatoryId)
+                                .FirstOrDefault();
+
+            if (contact != null)
+            {
+                signatory.Name = model.SignatoryName;
+                signatory.JobTitle = model.SignatoryTitle;
+                signatory.Email = model.SignatoryEmail;
+            }
+
+            this._context.SaveChanges();
+        }
+
+        public List<ChecklistViewModel> GetVendorChecklist(int vendorId)
+        {
+            var checkList = this._context
+                                          .Vendor_Checklist
+                                          .Where(r => r.VendorId == vendorId)
+                                          .Select(r => new ChecklistViewModel
+                                          {
+                                              Id = r.VendorChecklistId,
+                                              Text = r.Text,
+                                              CommentType = r.CommentType,
+                                              IsActive = r.IsActive
+                                          }).ToList();
+
+            return checkList;
         }
     }
 }

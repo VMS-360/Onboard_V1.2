@@ -346,6 +346,29 @@ namespace Onboard.Web.UI.Controllers
 
         }
 
+        public ActionResult VendorInfo(int vendorId)
+        {
+            VendorsViewModel model = new VendorsViewModel();
+            model = this._databaseService.GetVendorDetails(Convert.ToInt32(vendorId));
+            model.VendorTaskList = this._databaseService.GetVendorChecklist(Convert.ToInt32(vendorId));
+
+            return View(model);
+        }
+
+        public ActionResult UpdateVendor(VendorsViewModel model)
+        {
+            this._databaseService.UpdateVendorDetails(model);
+            VendorsViewModel updatedModel = this._databaseService.GetVendorDetails(model.VendorId);
+
+            return this.Json(
+                                    new
+                                    {
+                                        Success = true,
+                                        Message = "Saved Successfully",
+                                        Html = this.RenderPartialViewToString("_VendorSummary", updatedModel)
+                                    });
+        }
+
         private JsonResult GetViewResult(ClientsViewModel client)
         {
             //user = this.AppendModelCombos(user);

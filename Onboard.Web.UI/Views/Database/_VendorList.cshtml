@@ -19,8 +19,7 @@
                         @vendor.CompanyName
                     </td>
                     <td class="project-actions">
-                        <a href="#" class="btn btn-white btn-sm" action="edit-vendor"><i class="fa fa-edit"></i> Edit </a>
-                        <a href="#" class="btn btn-white btn-sm" action="view-vendor"><i class="fa fa-folder"></i> View </a>
+                        <a href="@Url.Action("VendorInfo", "Database", new { vendorId = vendor.VendorId })" class="btn btn-white btn-sm"><i class="fa fa-folder"></i> View </a>
                     </td>
                 </tr>
             }

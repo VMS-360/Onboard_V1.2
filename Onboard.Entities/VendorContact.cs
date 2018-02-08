@@ -13,6 +13,10 @@ namespace Onboard.Entities
         [MaxLength(100)]
         public string Name { get; set; }
 
+        [Required]
+        [MaxLength(100)]
+        public string JobTitle { get; set; }
+
         [MaxLength(100)]
         public string Email { get; set; }
 

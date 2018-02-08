@@ -13,5 +13,7 @@
         public string CommentValue { get; set; }
 
         public string Helper { get; set; }
+
+        public string IsActive { get; set; }
     }
 }

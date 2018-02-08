@@ -1,0 +1,92 @@
+﻿@model Onboard.Web.UI.Models.DatabaseViewModels.VendorsViewModel
+<form id="form-edit-vendor" action="#" class="">
+    @Html.ValidationSummary("The following errors occurred:")
+    @Html.HiddenFor(m => m.VendorId)
+    @Html.HiddenFor(m => m.ContactId)
+    @Html.HiddenFor(m => m.SignatoryId)
+    <div class="row">
+        <div class="col-lg-5">
+            <dl class="dl-horizontal">
+                <dt>Legal name:</dt>
+                <dd>
+                    <span category="label">@Model.CompanyName</span>
+                    @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>&nbsp;</dt>
+                <dd>&nbsp;</dd>
+                <dt>Contact Name:</dt>
+                <dd>
+                    <span category="label">@Model.ContactName</span>
+                    @Html.TextBoxFor(model => model.ContactName, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Contact Job Title:</dt>
+                <dd>
+                    <span category="label">@Model.ContactTitle</span>
+                    @Html.TextBoxFor(model => model.ContactTitle, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Address:</dt>
+                <dd>
+                    <span category="label">@Model.Address</span>
+                    @Html.TextBoxFor(model => model.AddressLine1, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt></dt>
+                <dd>
+                    <div class="row">
+                        <div class="col-sm-4 no-padding">
+                            @Html.TextBoxFor(model => model.City, new { @class = "form-control", category = "editor" })
+                        </div>
+                        <div class="col-sm-4 no-padding">
+                            @Html.TextBoxFor(model => model.State, new { @class = "form-control", category = "editor" })
+                        </div>
+                        <div class="col-sm-4 ">
+                            @Html.TextBoxFor(model => model.Zip, new { @class = "form-control", category = "editor" })
+                        </div>
+                    </div>
+                </dd>
+                <dt>Federal ID:</dt>
+                <dd>
+                    <span category="label">@Model.TaxId</span>
+                    @Html.TextBoxFor(model => model.TaxId, new { @class = "form-control", category = "editor" })
+                </dd>
+            </dl>
+        </div>
+        <div class="col-lg-7" id="cluster_info">
+            <dl class="dl-horizontal">
+                <dt>&nbsp;</dt>
+                <dd>&nbsp;</dd>
+                <dt>Contact Email:</dt>
+                <dd>
+                    <span category="label">@Model.ContactEmail</span>
+                    @Html.TextBoxFor(model => model.ContactEmail, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Signatory Name:</dt>
+                <dd>
+                    <span category="label">@Model.SignatoryName</span>
+                    @Html.TextBoxFor(model => model.SignatoryName, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Signatory Title:</dt>
+                <dd>
+                    <span category="label">@Model.SignatoryTitle</span>
+                    @Html.TextBoxFor(model => model.SignatoryTitle, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Signatory Email:</dt>
+                <dd>
+                    <span category="label">@Model.SignatoryEmail</span>
+                    @Html.TextBoxFor(model => model.SignatoryEmail, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>Status:</dt>
+                <dd>
+                    <span category="label">@Model.Status</span>
+                    @Html.TextBoxFor(model => model.Status, new { @class = "form-control", category = "editor" })
+                </dd>
+                <dt>MSA</dt>
+                <dd class="text-navy">Open MSA</dd>
+            </dl>
+        </div>
+        <div class="col-lg-5">
+            <a href="#" action="edit-vendor" class="btn btn-white btn-xs">Edit Vendor</a>
+            <a href="#" action="save-vendor" class="btn btn-white btn-xs">Save Vendor</a>
+            <a href="#" action="cancel-vendor" class="btn btn-white btn-xs">Cancel</a>
+        </div>
+    </div>
+</form>

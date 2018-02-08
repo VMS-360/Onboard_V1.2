@@ -1,0 +1,148 @@
+﻿@model Onboard.Web.UI.Models.DatabaseViewModels.VendorsViewModel
+@{
+    ViewData["Title"] = "Onbaord - Vendors Details";
+}
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-sm-8">
+        <h2>Candidate Onboarding</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("Vendors", "Database")">Vendor</a>
+            </li>
+            <li class="active">
+                <strong>Vendor Details</strong>
+            </li>
+        </ol>
+    </div>
+    <div class="col-sm-4">
+        <dl class="pull-right" style="padding-top:40px;">
+        </dl>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="wrapper wrapper-content animated fadeInUp">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <div id="div-vendor-details">
+                        @Html.Partial("_VendorSummary", Model)
+                    </div>
+                    <div class="row m-t-sm">
+                        <div class="col-lg-12">
+                            <div class="panel blank-panel">
+                                <div class="panel-heading">
+                                    <div class="panel-options">
+                                        <ul class="nav nav-tabs">
+                                            <li class="active"><a href="#tab-1" data-toggle="tab">Vendor Tasklist</a></li>
+                                            <li class=""><a href="#tab-2" data-toggle="tab">Themesoft Tasklist</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="tab-content">
+                                        <div class="tab-pane active" id="tab-1">
+                                            <table class="table table-hover" id="table-vendor-tasklist">
+                                                <tbody>
+                                                    @foreach (var item in Model.VendorTaskList)
+                                                    {
+                                                        @Html.Partial("_TaskList", item)
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="tab-pane" id="tab-2">
+                                            <table class="table table-hover" id="table-themesoft-tasklist">
+                                                <tbody>
+                                                    @foreach (var item in Model.ThemesoftTaskList)
+                                                    {
+                                                        @Html.Partial("_TaskList", item)
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('span[category="label"]').show();
+            $('input[category="editor"]').hide();
+            $('a[action="edit-vendor"]').show();
+            $('a[action="save-vendor"]').hide();
+            $('a[action="cancel-vendor"]').hide();
+        }).on('click', 'a[action="edit-vendor"]', function () {
+            $('span[category="label"]').hide();
+            $('input[category="editor"]').show();
+            $('a[action="edit-vendor"]').hide();
+            $('a[action="save-vendor"]').show();
+            $('a[action="cancel-vendor"]').show();
+            return false;
+        }).on('click', 'a[action="cancel-vendor"]', function () {
+            $("#form-edit-vendor").find(".validation-summary-errors")
+                .addClass("validation-summary-valid")
+                .removeClass("validation-summary-errors");
+            $('span[category="label"]').show();
+            $('input[category="editor"]').hide();
+            $('a[action="edit-vendor"]').show();
+            $('a[action="save-vendor"]').hide();
+            $('a[action="cancel-vendor"]').hide();
+            return false;
+        }).on('click', 'a[action="save-vendor"]', function () {
+            $("#form-edit-vendor").find(".validation-summary-errors")
+                .addClass("validation-summary-valid")
+                .removeClass("validation-summary-errors");
+
+            var validationInfo = $("#form-edit-vendor").data("unobtrusiveValidation");
+            if (!validationInfo || !validationInfo.validate || validationInfo.validate()) {
+
+                var url = '@Url.Action("UpdateVendor", "Database")';
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: $("#form-edit-vendor").serialize(),
+                    error: function () {
+                        alert("An error occurred processing the request.");
+                    },
+                    success: function (result, textStatus, xhr) {
+                        if (xhr.status === 302) {
+                            alert("Your session has expired.  Please log in.");
+                        }
+                        else {
+                            if (result.Success) {
+                                $('#div-vendor-details').html(result.Html);
+                                $('span[category="label"]').show();
+                                $('input[category="editor"]').hide();
+                                $('a[action="edit-vendor"]').show();
+                                $('a[action="save-vendor"]').hide();
+                                $('a[action="cancel-vendor"]').hide();
+                            }
+                            else {
+                                $('#div-candidaite-details').html(result.Html);
+                                $('span[category="label"]').hide();
+                                $('input[category="editor"]').show();
+                                $('a[action="edit-vendor"]').hide();
+                                $('a[action="save-vendor"]').show();
+                                $('a[action="cancel-vendor"]').show();
+                            }
+                        }
+                    }
+                });
+            }
+            return false;
+        });
+    </script>
+}
+
+
